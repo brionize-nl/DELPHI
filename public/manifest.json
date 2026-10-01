@@ -1,7 +1,7 @@
 {
-  "name": "Ollama — Brionize",
-  "short_name": "Ollama",
-  "description": "Persoonlijke AI chat via Ollama",
+  "name": "DELPHI — AI Command Center",
+  "short_name": "DELPHI",
+  "description": "AI Command Center — Chat, taken en status voor je AI-team",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0f",

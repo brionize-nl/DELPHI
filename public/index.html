@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0a0a0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Ollama — Brionize</title>
+<title>DELPHI — Brionize</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/icon-192.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icon-192.svg">
@@ -820,6 +820,335 @@ select, button, input, textarea {
   .preset-select { max-width: 100px; font-size: 12px; }
   .welcome h2 { font-size: 20px; }
   .welcome-prompts { grid-template-columns: 1fr; }
+  .tab-bar { gap: 2px; padding: 6px 8px; }
+  .tab-btn { font-size: 12px; padding: 7px 10px; gap: 5px; }
+  .tab-btn svg { width: 14px; height: 14px; }
+  .tasks-header { flex-wrap: wrap; }
+  .task-filters { width: 100%; }
+  .task-filters select { flex: 1; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .activity-item { flex-wrap: wrap; }
+}
+
+/* ── Tab bar ── */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 8px 16px;
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.tab-btn:hover { color: var(--text-dim); background: var(--bg-hover); }
+
+.tab-btn.active {
+  color: var(--accent);
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.tab-btn .tab-badge {
+  background: var(--accent);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+/* ── Views ── */
+.view { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.view.hidden { display: none; }
+
+/* ── Tasks view ── */
+.tasks-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.tasks-header h2 { font-size: 16px; font-weight: 600; white-space: nowrap; }
+
+.task-filters {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.task-filters select {
+  background: var(--bg-input);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.task-filters select:focus { outline: none; border-color: var(--accent); }
+
+.btn-new-task {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.15s;
+}
+
+.btn-new-task:hover { background: var(--accent-hover); }
+
+.task-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-card {
+  background: var(--bg-msg-ai);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.task-card:hover { border-color: var(--accent); }
+
+.task-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.task-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.task-status-dot.nieuw { background: #3b82f6; }
+.task-status-dot.bezig { background: #f59e0b; }
+.task-status-dot.review { background: #8b5cf6; }
+.task-status-dot.klaar { background: #22c55e; }
+
+.task-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-card-assignee {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.task-card-assignee.claude { background: rgba(249, 115, 22, 0.15); color: #f97316; }
+.task-card-assignee.codex { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.task-card-assignee.mistral { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.task-card-assignee.gemini { background: rgba(66, 133, 244, 0.15); color: #4285f4; }
+.task-card-assignee.ollama { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
+
+.task-card-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.task-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.task-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.task-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-muted);
+  padding: 32px;
+}
+
+.task-empty svg { opacity: 0.4; }
+.task-empty p { font-size: 14px; }
+
+/* ── Status view ── */
+.status-view {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--bg-msg-ai);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.stat-card .stat-val {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-card .stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.stat-card .stat-val.blue { color: #3b82f6; }
+.stat-card .stat-val.orange { color: #f59e0b; }
+.stat-card .stat-val.purple { color: #8b5cf6; }
+.stat-card .stat-val.green { color: #22c55e; }
+
+.status-section {
+  margin-bottom: 24px;
+}
+
+.status-section h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-dim);
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--bg-msg-ai);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.activity-text { flex: 1; color: var(--text-dim); }
+.activity-text strong { color: var(--text); font-weight: 600; }
+.activity-time { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+.status-empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.n8n-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--bg-msg-ai);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.n8n-status .n8n-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.n8n-status .n8n-dot.connected { background: var(--success); }
+
+.n8n-config-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: 8px;
+  border: 1px dashed var(--border);
 }
 </style>
 </head>
@@ -829,7 +1158,7 @@ select, button, input, textarea {
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <img src="/icon-192.svg" alt="">
-    <span class="sidebar-brand">Ollama</span>
+    <span class="sidebar-brand">DELPHI</span>
     <button class="sidebar-new" id="btn-new-conv" title="Nieuw gesprek">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
     </button>
@@ -866,6 +1195,9 @@ select, button, input, textarea {
       Projecten
     </div>
     <div class="section-links" id="projects-links">
+      <a href="https://github.com/brionize-nl/DELPHI" target="_blank" rel="noopener" class="sidebar-link">
+        <span class="link-dot" style="background:#6366f1"></span>DELPHI
+      </a>
       <a href="https://github.com/brionize-nl/Brionicle" target="_blank" rel="noopener" class="sidebar-link">
         <span class="link-dot" style="background:#8b5cf6"></span>Brionicle
       </a>
@@ -923,11 +1255,29 @@ select, button, input, textarea {
     </div>
   </header>
 
+  <div class="tab-bar" id="tab-bar">
+    <button class="tab-btn active" data-tab="chat">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      Chat
+    </button>
+    <button class="tab-btn" data-tab="taken">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Taken
+      <span class="tab-badge" id="tasks-badge" style="display:none">0</span>
+    </button>
+    <button class="tab-btn" data-tab="status">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      Status
+    </button>
+  </div>
+
+  <!-- Chat view -->
+  <div class="view" id="view-chat">
   <div class="chat" id="chat">
     <div class="welcome" id="welcome">
       <img src="/icon-192.svg" alt="" width="64" height="64" style="opacity:0.8">
-      <h2>Waar kan ik je mee helpen?</h2>
-      <p>Chat met lokale Ollama-modellen of kies Claude, ChatGPT of Mistral.</p>
+      <h2>DELPHI — AI Command Center</h2>
+      <p>Chat met Ollama, beheer taken voor je AI-team, en volg de voortgang.</p>
       <div class="welcome-prompts">
         <button class="welcome-prompt" data-prompt="Schrijf een Python script dat alle duplicate bestanden in een map vindt en verwijdert">
           <span class="wp-icon">&#128187;</span>
@@ -960,6 +1310,67 @@ select, button, input, textarea {
     </div>
     <div class="input-hint" id="input-hint"></div>
   </div>
+  </div><!-- /view-chat -->
+
+  <!-- Taken view -->
+  <div class="view hidden" id="view-taken">
+    <div class="tasks-header">
+      <h2>Taken</h2>
+      <div class="task-filters">
+        <select id="task-filter-status">
+          <option value="">Alle statussen</option>
+          <option value="nieuw">Nieuw</option>
+          <option value="bezig">Bezig</option>
+          <option value="review">Review</option>
+          <option value="klaar">Klaar</option>
+        </select>
+        <select id="task-filter-assignee">
+          <option value="">Alle toewijzingen</option>
+          <option value="claude">Claude</option>
+          <option value="codex">Codex</option>
+          <option value="mistral">Mistral</option>
+          <option value="gemini">Gemini</option>
+          <option value="ollama">Ollama</option>
+        </select>
+      </div>
+      <button class="btn-new-task" id="btn-new-task">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Nieuwe taak
+      </button>
+    </div>
+    <div class="task-list" id="task-list"></div>
+  </div>
+
+  <!-- Status view -->
+  <div class="view hidden" id="view-status">
+    <div class="status-view">
+      <div class="stat-grid" id="stat-grid">
+        <div class="stat-card"><div class="stat-val blue" id="stat-total">0</div><div class="stat-label">Totaal</div></div>
+        <div class="stat-card"><div class="stat-val orange" id="stat-bezig">0</div><div class="stat-label">Bezig</div></div>
+        <div class="stat-card"><div class="stat-val purple" id="stat-review">0</div><div class="stat-label">Review</div></div>
+        <div class="stat-card"><div class="stat-val green" id="stat-klaar">0</div><div class="stat-label">Klaar</div></div>
+      </div>
+
+      <div class="status-section">
+        <h3>n8n Verbinding</h3>
+        <div class="n8n-status">
+          <span class="n8n-dot" id="n8n-dot"></span>
+          <span id="n8n-status-text">Niet verbonden</span>
+        </div>
+        <div class="n8n-config-hint">
+          n8n wordt later gekoppeld. Taken worden lokaal opgeslagen tot de verbinding actief is.
+        </div>
+      </div>
+
+      <div class="status-section">
+        <h3>Recente activiteit</h3>
+        <div class="activity-list" id="activity-list">
+          <div class="status-empty">Nog geen activiteit</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- Settings modal -->
@@ -984,6 +1395,74 @@ select, button, input, textarea {
       <button class="btn btn-danger" id="btn-clear-all">Wis alles</button>
       <button class="btn btn-ghost" id="btn-cancel">Annuleer</button>
       <button class="btn btn-primary" id="btn-save">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task modal -->
+<div class="modal-overlay" id="task-modal">
+  <div class="modal">
+    <h3 id="task-modal-title">Nieuwe taak</h3>
+    <div class="field">
+      <label for="task-title">Titel</label>
+      <input type="text" id="task-title" placeholder="Korte omschrijving van de taak" maxlength="120">
+    </div>
+    <div class="field">
+      <label for="task-desc">Beschrijving</label>
+      <textarea id="task-desc" placeholder="Wat moet er precies gebeuren? Wees specifiek."></textarea>
+    </div>
+    <div class="field">
+      <label for="task-assignee">Toewijzing</label>
+      <select id="task-assignee">
+        <option value="claude">Claude</option>
+        <option value="codex">Codex (ChatGPT)</option>
+        <option value="mistral">Mistral</option>
+        <option value="gemini">Gemini</option>
+        <option value="ollama">Ollama (lokaal)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="task-priority">Prioriteit</label>
+      <select id="task-priority">
+        <option value="normaal">Normaal</option>
+        <option value="hoog">Hoog</option>
+        <option value="laag">Laag</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="task-branch">Branch (optioneel)</label>
+      <input type="text" id="task-branch" placeholder="bijv. claude/feature-naam">
+      <div class="field-hint">Wordt automatisch aangemaakt door n8n wanneer gekoppeld</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="btn-task-delete" style="display:none;margin-right:auto">Verwijder</button>
+      <button class="btn btn-ghost" id="btn-task-cancel">Annuleer</button>
+      <button class="btn btn-primary" id="btn-task-save">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task detail modal -->
+<div class="modal-overlay" id="task-detail-modal">
+  <div class="modal" style="max-width:560px">
+    <h3 id="task-detail-title">Taak</h3>
+    <div style="margin-bottom:14px">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+        <span class="task-status-dot" id="task-detail-dot"></span>
+        <select id="task-detail-status" style="background:var(--bg-input);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;font-family:inherit">
+          <option value="nieuw">Nieuw</option>
+          <option value="bezig">Bezig</option>
+          <option value="review">Review</option>
+          <option value="klaar">Klaar</option>
+        </select>
+        <span class="task-card-assignee" id="task-detail-assignee"></span>
+      </div>
+      <p style="color:var(--text-dim);font-size:13px;white-space:pre-wrap" id="task-detail-desc"></p>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);display:flex;flex-direction:column;gap:4px" id="task-detail-meta"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="btn-task-edit" style="margin-right:auto">Bewerken</button>
+      <button class="btn btn-ghost" id="btn-task-detail-close">Sluiten</button>
     </div>
   </div>
 </div>
@@ -1661,6 +2140,279 @@ $('#settings-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) $('#settings-modal').classList.remove('open');
 });
 
+// ── Tabs ──
+let activeTab = 'chat';
+const tabBar = $('#tab-bar');
+const chatControls = $('.header-controls');
+
+tabBar.addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  const tab = btn.dataset.tab;
+  if (tab === activeTab) return;
+  activeTab = tab;
+  tabBar.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  ['chat', 'taken', 'status'].forEach(v => {
+    const el = $('#view-' + v);
+    if (el) el.classList.toggle('hidden', v !== tab);
+  });
+  chatControls.style.display = tab === 'chat' ? '' : 'none';
+  if (tab === 'taken') renderTasks();
+  if (tab === 'status') renderStatus();
+});
+
+// ── Tasks (localStorage) ──
+let tasks = {};
+let editingTaskId = null;
+
+function loadTasks() {
+  try {
+    const raw = localStorage.getItem('delphi_tasks');
+    if (raw) tasks = JSON.parse(raw);
+  } catch {}
+}
+
+function saveTasks() {
+  try { localStorage.setItem('delphi_tasks', JSON.stringify(tasks)); } catch {}
+}
+
+function loadActivity() {
+  try {
+    const raw = localStorage.getItem('delphi_activity');
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function addActivity(text, type = 'task') {
+  const activity = loadActivity();
+  activity.unshift({ text, type, time: Date.now() });
+  if (activity.length > 50) activity.length = 50;
+  try { localStorage.setItem('delphi_activity', JSON.stringify(activity)); } catch {}
+}
+
+function renderTasks() {
+  const list = $('#task-list');
+  const statusFilter = $('#task-filter-status').value;
+  const assigneeFilter = $('#task-filter-assignee').value;
+
+  const sorted = Object.values(tasks).sort((a, b) => {
+    const order = { hoog: 0, normaal: 1, laag: 2 };
+    if ((order[a.priority] || 1) !== (order[b.priority] || 1)) return (order[a.priority] || 1) - (order[b.priority] || 1);
+    return b.updated - a.updated;
+  });
+
+  const filtered = sorted.filter(t => {
+    if (statusFilter && t.status !== statusFilter) return false;
+    if (assigneeFilter && t.assignee !== assigneeFilter) return false;
+    return true;
+  });
+
+  updateTaskBadge();
+
+  if (!filtered.length) {
+    list.innerHTML = `
+      <div class="task-empty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <p>${statusFilter || assigneeFilter ? 'Geen taken met deze filters' : 'Nog geen taken aangemaakt'}</p>
+        ${!statusFilter && !assigneeFilter ? '<button class="btn btn-primary" onclick="openNewTask()">Eerste taak aanmaken</button>' : ''}
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(t => `
+    <div class="task-card" data-id="${t.id}" onclick="openTaskDetail('${t.id}')">
+      <div class="task-card-top">
+        <span class="task-status-dot ${t.status}"></span>
+        <span class="task-card-title">${escapeHtml(t.title)}</span>
+        <span class="task-card-assignee ${t.assignee}">${escapeHtml(t.assignee)}</span>
+      </div>
+      ${t.description ? `<div class="task-card-desc">${escapeHtml(t.description)}</div>` : ''}
+      <div class="task-card-meta">
+        <span>${t.status}</span>
+        ${t.branch ? `<span>&#8618; ${escapeHtml(t.branch)}</span>` : ''}
+        <span>${timeAgo(t.updated)}</span>
+        ${t.priority === 'hoog' ? '<span style="color:var(--error)">&#9650; hoog</span>' : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateTaskBadge() {
+  const active = Object.values(tasks).filter(t => t.status !== 'klaar').length;
+  const badge = $('#tasks-badge');
+  if (active > 0) {
+    badge.textContent = active;
+    badge.style.display = '';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function timeAgo(ts) {
+  const diff = (Date.now() - ts) / 1000;
+  if (diff < 60) return 'zojuist';
+  if (diff < 3600) return Math.floor(diff / 60) + ' min';
+  if (diff < 86400) return Math.floor(diff / 3600) + ' uur';
+  return Math.floor(diff / 86400) + ' dag' + (Math.floor(diff / 86400) > 1 ? 'en' : '');
+}
+
+window.openNewTask = function() {
+  editingTaskId = null;
+  $('#task-modal-title').textContent = 'Nieuwe taak';
+  $('#task-title').value = '';
+  $('#task-desc').value = '';
+  $('#task-assignee').value = 'claude';
+  $('#task-priority').value = 'normaal';
+  $('#task-branch').value = '';
+  $('#btn-task-delete').style.display = 'none';
+  $('#task-modal').classList.add('open');
+  setTimeout(() => $('#task-title').focus(), 50);
+};
+
+function openEditTask(id) {
+  const t = tasks[id];
+  if (!t) return;
+  editingTaskId = id;
+  $('#task-modal-title').textContent = 'Taak bewerken';
+  $('#task-title').value = t.title;
+  $('#task-desc').value = t.description || '';
+  $('#task-assignee').value = t.assignee;
+  $('#task-priority').value = t.priority || 'normaal';
+  $('#task-branch').value = t.branch || '';
+  $('#btn-task-delete').style.display = '';
+  $('#task-modal').classList.add('open');
+  $('#task-detail-modal').classList.remove('open');
+  setTimeout(() => $('#task-title').focus(), 50);
+}
+
+window.openTaskDetail = function(id) {
+  const t = tasks[id];
+  if (!t) return;
+  editingTaskId = id;
+  $('#task-detail-title').textContent = t.title;
+  $('#task-detail-dot').className = 'task-status-dot ' + t.status;
+  $('#task-detail-status').value = t.status;
+  const aEl = $('#task-detail-assignee');
+  aEl.textContent = t.assignee;
+  aEl.className = 'task-card-assignee ' + t.assignee;
+  $('#task-detail-desc').textContent = t.description || 'Geen beschrijving';
+  $('#task-detail-meta').innerHTML = `
+    <span>Prioriteit: ${t.priority || 'normaal'}</span>
+    ${t.branch ? `<span>Branch: ${escapeHtml(t.branch)}</span>` : ''}
+    <span>Aangemaakt: ${new Date(t.created).toLocaleString('nl-NL')}</span>
+    <span>Bijgewerkt: ${new Date(t.updated).toLocaleString('nl-NL')}</span>
+  `;
+  $('#task-detail-modal').classList.add('open');
+};
+
+$('#btn-new-task').addEventListener('click', () => openNewTask());
+
+$('#btn-task-save').addEventListener('click', () => {
+  const title = $('#task-title').value.trim();
+  if (!title) { $('#task-title').focus(); return; }
+
+  if (editingTaskId && tasks[editingTaskId]) {
+    const t = tasks[editingTaskId];
+    t.title = title;
+    t.description = $('#task-desc').value.trim();
+    t.assignee = $('#task-assignee').value;
+    t.priority = $('#task-priority').value;
+    t.branch = $('#task-branch').value.trim();
+    t.updated = Date.now();
+    addActivity(`Taak "${title}" bijgewerkt`, 'update');
+  } else {
+    const id = genId();
+    tasks[id] = {
+      id, title,
+      description: $('#task-desc').value.trim(),
+      assignee: $('#task-assignee').value,
+      priority: $('#task-priority').value,
+      branch: $('#task-branch').value.trim(),
+      status: 'nieuw',
+      created: Date.now(),
+      updated: Date.now()
+    };
+    addActivity(`Nieuwe taak: "${title}" → ${$('#task-assignee').value}`, 'create');
+  }
+
+  saveTasks();
+  $('#task-modal').classList.remove('open');
+  renderTasks();
+});
+
+$('#btn-task-cancel').addEventListener('click', () => {
+  $('#task-modal').classList.remove('open');
+});
+
+$('#btn-task-delete').addEventListener('click', () => {
+  if (!editingTaskId || !tasks[editingTaskId]) return;
+  if (!confirm(`"${tasks[editingTaskId].title}" verwijderen?`)) return;
+  addActivity(`Taak "${tasks[editingTaskId].title}" verwijderd`, 'delete');
+  delete tasks[editingTaskId];
+  saveTasks();
+  editingTaskId = null;
+  $('#task-modal').classList.remove('open');
+  renderTasks();
+});
+
+$('#task-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) $('#task-modal').classList.remove('open');
+});
+
+$('#task-detail-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) $('#task-detail-modal').classList.remove('open');
+});
+
+$('#btn-task-detail-close').addEventListener('click', () => {
+  $('#task-detail-modal').classList.remove('open');
+});
+
+$('#btn-task-edit').addEventListener('click', () => {
+  if (editingTaskId) openEditTask(editingTaskId);
+});
+
+$('#task-detail-status').addEventListener('change', e => {
+  if (!editingTaskId || !tasks[editingTaskId]) return;
+  const t = tasks[editingTaskId];
+  const oldStatus = t.status;
+  t.status = e.target.value;
+  t.updated = Date.now();
+  $('#task-detail-dot').className = 'task-status-dot ' + t.status;
+  if (oldStatus !== t.status) {
+    addActivity(`"${t.title}": ${oldStatus} → ${t.status}`, 'status');
+  }
+  saveTasks();
+  renderTasks();
+});
+
+$('#task-filter-status').addEventListener('change', renderTasks);
+$('#task-filter-assignee').addEventListener('change', renderTasks);
+
+// ── Status dashboard ──
+function renderStatus() {
+  const all = Object.values(tasks);
+  $('#stat-total').textContent = all.length;
+  $('#stat-bezig').textContent = all.filter(t => t.status === 'bezig').length;
+  $('#stat-review').textContent = all.filter(t => t.status === 'review').length;
+  $('#stat-klaar').textContent = all.filter(t => t.status === 'klaar').length;
+
+  const activity = loadActivity();
+  const actList = $('#activity-list');
+  if (!activity.length) {
+    actList.innerHTML = '<div class="status-empty">Nog geen activiteit</div>';
+    return;
+  }
+
+  const colors = { create: '#22c55e', update: '#3b82f6', delete: '#ef4444', status: '#f59e0b', task: '#6366f1' };
+  actList.innerHTML = activity.slice(0, 20).map(a => `
+    <div class="activity-item">
+      <span class="activity-dot" style="background:${colors[a.type] || colors.task}"></span>
+      <span class="activity-text">${escapeHtml(a.text)}</span>
+      <span class="activity-time">${timeAgo(a.time)}</span>
+    </div>
+  `).join('');
+}
+
 // ── Keyboard shortcuts ──
 document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey) {
@@ -1674,8 +2426,10 @@ document.addEventListener('keydown', e => {
 
 // ── Init ──
 loadConversations();
+loadTasks();
 initPresets();
 updateSendButton();
+updateTaskBadge();
 
 if (Object.keys(conversations).length) {
   const saved = getSetting('active', '');
