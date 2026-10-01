@@ -1,0 +1,70 @@
+ollama.brionize.nl {
+	@api_no_key {
+		path /api/*
+		not {
+			header X-API-Key __OLLAMA_API_KEY__
+		}
+	}
+	respond @api_no_key "Ongeautoriseerd" 401
+
+	handle /api/ollama/* {
+		uri strip_prefix /api/ollama
+		reverse_proxy localhost:11434 {
+			header_up Host localhost:11434
+			header_up Origin http://localhost:11434
+			header_up -X-API-Key
+			flush_interval -1
+		}
+	}
+
+	handle /api/claude/* {
+		uri strip_prefix /api/claude
+		reverse_proxy https://api.anthropic.com {
+			header_up x-api-key __CLAUDE_API_KEY__
+			header_up anthropic-version 2023-06-01
+			header_up Host api.anthropic.com
+			flush_interval -1
+		}
+	}
+
+	handle /api/openai/* {
+		uri strip_prefix /api/openai
+		reverse_proxy https://api.openai.com {
+			header_up Authorization "Bearer __OPENAI_API_KEY__"
+			header_up Host api.openai.com
+			header_up -X-API-Key
+			flush_interval -1
+		}
+	}
+
+	handle /api/mistral/* {
+		uri strip_prefix /api/mistral
+		reverse_proxy https://api.mistral.ai {
+			header_up Authorization "Bearer __MISTRAL_API_KEY__"
+			header_up Host api.mistral.ai
+			header_up -X-API-Key
+			flush_interval -1
+		}
+	}
+
+	handle /api/* {
+		reverse_proxy localhost:11434 {
+			flush_interval -1
+			header_up Host localhost:11434
+			header_up Origin http://localhost:11434
+		}
+	}
+
+	handle {
+		root * /opt/ollama-pwa/public
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy no-referrer
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+	}
+}
