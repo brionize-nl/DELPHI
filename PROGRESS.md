@@ -55,3 +55,9 @@
 
 - Nieuwe v5-smoketest voor alle vier repositories afgerond (`--max-files 1 --max-bytes 4000`). DELPHI/Brionicle: onbewezen AI-voorstellen, niet gecommit; sysdash: geen nieuw geschikt bestand binnen deze kleine testlimiet; brionize-ai-framework: ambigue edit correct afgewezen en herprobeerbaar. Geen fixes-branches gepubliceerd. Normale cronlimiet blijft 20 KB/30 bestanden/45 minuten per project. Dit is geen volledige audit.
 - Nul onderzochte bestanden wordt in de UI expliciet als zodanig benoemd.
+
+## Security-uitrol — 2026-10-02
+
+- Claude-securitybranch geïntegreerd: onbekende `/api/*` routes geven 404, bestaande expliciete routes blijven bereikbaar; CSP-header toegevoegd.
+- Setup-diagnose gebruikt de expliciete Ollama-route; cache v14 vernieuwt ook de gecachte paginaheaders.
+- Publicatie via GitHub-PR, daarna VPS-pull; geen wachtwoordpush op de VPS nodig.

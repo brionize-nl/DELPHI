@@ -147,7 +147,7 @@ if [ "$OLLAMA_STATUS" != "200" ]; then
 fi
 
 echo -n "Caddy proxy:   "
-CADDY_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "X-API-Key: $API_KEY" https://ollama.brionize.nl/api/tags 2>/dev/null)
+CADDY_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "X-API-Key: $API_KEY" https://ollama.brionize.nl/api/ollama/api/tags 2>/dev/null)
 echo "$CADDY_STATUS"
 
 echo ""
