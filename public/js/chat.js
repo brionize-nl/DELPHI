@@ -586,3 +586,44 @@ $('#btn-clear-all').addEventListener('click', () => {
 $('#settings-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) $('#settings-modal').classList.remove('open');
 });
+
+// Files become a draft only: no uploads or automatic sends.
+(() => {
+  const area=$('#view-chat .input-area');if(!area)return;
+  const limit=100*1024;let dragDepth=0,busy=false,draftEpoch=0;
+  const hasFiles=event=>Array.from(event.dataTransfer?.types || []).includes('Files');
+  function clearDrag(){dragDepth=0;area.classList.remove('file-dragging');}
+  document.addEventListener('delphi:chat-draft-reset',()=>{draftEpoch++;if(busy)$('#input-hint').textContent='Bestand lezen geannuleerd voor dit concept.';});
+  area.addEventListener('dragenter',event=>{if(!hasFiles(event))return;event.preventDefault();dragDepth++;area.classList.add('file-dragging');});
+  area.addEventListener('dragover',event=>{if(!hasFiles(event))return;event.preventDefault();event.dataTransfer.dropEffect='copy';});
+  area.addEventListener('dragleave',()=>{dragDepth=Math.max(0,dragDepth-1);if(!dragDepth)clearDrag();});
+  area.addEventListener('dragend',clearDrag);
+  function read(file) {
+    return new Promise((resolve,reject)=>{
+      const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(new Error('Bestand kon niet worden gelezen'));reader.onabort=()=>reject(new Error('Bestand lezen geannuleerd'));reader.readAsText(file,'UTF-8');
+    });
+  }
+  area.addEventListener('drop',async event=>{
+    if(!hasFiles(event))return;event.preventDefault();clearDrag();
+    const files=Array.from(event.dataTransfer.files);if(!files.length)return;
+    if(busy){$('#input-hint').textContent='Wacht tot het bestand gelezen is.';return;}
+    const sourceExtensions=['txt','md','js','mjs','cjs','ts','tsx','jsx','py','html','css','json','yaml','yml','sh','bash','sql','xml','svg','csv','toml','ini','conf','log','rs','go','java','c','h','cpp','php','rb'];
+    if(files.some(f=>f.size>limit) || files.reduce((sum,f)=>sum+f.size,0)>limit) {$('#input-hint').textContent='Maximaal 100 KB per bestand en per sleepactie.';return;}
+    if(files.some(f=>!f.type.startsWith('text/') && !sourceExtensions.includes(f.name.split('.').pop().toLowerCase()))) {$('#input-hint').textContent='Gebruik tekst- of broncodebestanden; binaire bestanden zijn niet ondersteund.';return;}
+    busy=true;const epoch=draftEpoch;$('#input-hint').textContent='Bestand lezen…';
+    try {
+      const texts=await Promise.all(files.map(read));
+      if(epoch!==draftEpoch)return;
+      const blocks=texts.map((text,index)=>{
+        if(text.includes('\0'))throw new Error('Dit bestand bevat binaire inhoud.');
+        const extension=files[index].name.includes('.')?files[index].name.split('.').pop().toLowerCase().replace(/[^a-z0-9+-]/g,'').slice(0,12):'text';
+        const longest=(text.match(/`+/g) || []).reduce((length,run)=>Math.max(length,run.length),2);
+        const fence='`'.repeat(longest+1);
+        return fence+extension+'\n'+text+'\n'+fence;
+      });
+      promptEl.value+=(promptEl.value?'\n\n':'')+blocks.join('\n\n');autoResize();promptEl.focus();
+      $('#input-hint').textContent=files.length+' bestand(en) als concept toegevoegd. Controleer en verstuur zelf.';
+    } catch(error) {if(epoch===draftEpoch)$('#input-hint').textContent=error.message;}
+    finally {busy=false;}
+  });
+})();

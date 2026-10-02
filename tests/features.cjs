@@ -77,6 +77,23 @@ const server=http.createServer(async(req,res)=>{
    await page.click('#btn-dashboard-refresh');await page.waitForFunction(()=>!dashboardBusy && document.querySelector('#dashboard-status').textContent==='Dashboard bijgewerkt.');
    await page.keyboard.press('Control+1');await page.keyboard.press('Control+6');assert.equal(await page.evaluate(()=>activeTab),'dashboard');tested++;
   }
+  if((await page.locator('#prompt').getAttribute('placeholder')).includes('sleep een tekstbestand')) {
+   await page.keyboard.press('Control+1');await page.fill('#prompt','Bestaand concept');const before=bodies.length;
+   async function drop(name,type,text) {
+    const transfer=await page.evaluateHandle(({name,type,text})=>{const value=new DataTransfer();value.items.add(new File([text],name,{type}));return value;},{name,type,text});
+    await page.dispatchEvent('#view-chat .input-area','dragenter',{dataTransfer:transfer});assert.equal(await page.locator('.input-area.file-dragging').count(),1);
+    await page.dispatchEvent('#view-chat .input-area','drop',{dataTransfer:transfer});await transfer.dispose();
+   }
+   await drop('code.js','text/javascript','const x = "hé <img onerror=x>";');await page.waitForFunction(()=>document.querySelector('#input-hint').textContent.includes('als concept'));
+   assert.equal(await page.inputValue('#prompt'),'Bestaand concept\n\n```js\nconst x = "hé <img onerror=x>";\n```');assert.equal(bodies.length,before);assert.equal(await page.locator('.input-area.file-dragging').count(),0);
+   const draft=await page.inputValue('#prompt');await drop('large.txt','text/plain','x'.repeat(100*1024+1));assert.match(await page.locator('#input-hint').innerText(),/100 KB/);assert.equal(await page.inputValue('#prompt'),draft);
+   await drop('image.png','image/png','image');assert.match(await page.locator('#input-hint').innerText(),/binaire/);assert.equal(await page.inputValue('#prompt'),draft);
+   await drop('nul.js','text/javascript','code\0binary');await page.waitForFunction(()=>document.querySelector('#input-hint').textContent.includes('binaire inhoud'));assert.equal(await page.inputValue('#prompt'),draft);
+   await drop('notes.md','text/markdown','```\nvoorbeeld\n```');await page.waitForFunction(()=>document.querySelector('#prompt').value.includes('````md'));
+   await page.evaluate(()=>{window.originalReader=FileReader;window.FileReader=class {readAsText(){queueMicrotask(()=>this.onerror());}};});
+   await drop('unreadable.txt','text/plain','text');await page.waitForFunction(()=>document.querySelector('#input-hint').textContent.includes('niet worden gelezen'));await page.evaluate(()=>window.FileReader=window.originalReader);
+   tested++;
+  }
   // Later feature PRs extend this test on the same branch stack.
   assert.deepEqual(errors,[]);
   const fallback=await browser.newContext({serviceWorkers:'block'});await fallback.addInitScript(()=>{localStorage.setItem('olla_apikey','test-key');Object.defineProperty(window,'SpeechRecognition',{value:undefined});Object.defineProperty(window,'webkitSpeechRecognition',{value:undefined});});

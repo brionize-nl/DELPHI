@@ -1185,3 +1185,5 @@ mark { background:var(--accent-dim); color:var(--text); border-radius:2px; }
 .dashboard-card a { color:var(--accent); }
 .dashboard-count { font-size:36px; font-weight:700; }
 @media (max-width:768px) { .dashboard-grid { grid-template-columns:1fr; } }
+
+.input-area.file-dragging { outline:2px solid var(--accent); outline-offset:-4px; background:var(--accent-dim); }
