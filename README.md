@@ -76,3 +76,5 @@ Gemini gebruikt de [officiële OpenAI-compatibiliteitsroute](https://ai.google.d
 Dashboard: zesde tab met aantallen, inspecties, vijf DELPHI-commits en lokale modellen. Laden bij openen/verversen; fouten in één gegevensbron laten de andere kaarten beschikbaar. Ctrl/Cmd+6 opent het dashboard.
 
 Bestanden slepen: tekst/broncode als UTF-8 concept, maximaal 100 KB per bestand én sleepactie. Binaire/onleesbare bestanden worden afgewezen. Bestaande concepttekst blijft behouden, backtick-fences in bronbestanden blijven intact. Geen upload of automatische verzending; een gesprek wisselen/versturen voorkomt late toevoeging aan het volgende concept.
+
+Modelvergelijking: twee lokale Ollama-modellen krijgen dezelfde vraag en context via parallelle HTTP-streams. Antwoorden/fouten blijven afzonderlijk zichtbaar; Stop, sluiten en Escape annuleren beide verzoeken. Op mobiel staan de panelen onder elkaar. Ollama kan modeluitvoering afhankelijk van geheugen en instellingen in een wachtrij zetten.
