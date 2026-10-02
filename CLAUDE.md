@@ -7,11 +7,19 @@ Eigenaar: Brionize (enige gebruiker). Geen publiek, geen scaling.
 ## Wie werkt hier
 Meerdere AI's werken aan deze repo. Iedereen volgt dezelfde regels.
 
+### Eerste keer? Lees deze bestanden in volgorde:
+1. `AGENTS.md` — regels (dit bestand)
+2. `WORKFLOW.md` — het vaste werkproces (5 stappen: idee → sparren → besluit → bouwen → opleveren)
+3. `DECISIONS.md` — alle besluiten die al genomen zijn
+4. `DELPHI-BLUEPRINT.md` — het technische faseplan
+5. `PROGRESS.md` — wie doet wat, wat is klaar
+
 ### Samenwerking
 1. **NOOIT direct op main pushen** — altijd eigen branch, eigenaar merged
 2. **Branch naamgeving**: `{ai}/beschrijving` (bijv. `claude/watchdog`, `codex/modular-split`, `ollama/fixes`)
 3. **Check open branches** voordat je begint — niet aan bestanden werken waar een ander mee bezig is
-4. **Lees `DELPHI-BLUEPRINT.md`** — dat is het faseplan, volg het
+4. **Volg het werkproces** — zie `WORKFLOW.md`, geen stap overslaan
+5. **Check besluiten** — zie `DECISIONS.md`, niet opnieuw bespreken wat al besloten is
 
 ## Architectuur
 
