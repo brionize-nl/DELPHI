@@ -74,3 +74,5 @@ Ctrl/Cmd+Enter verstuurt, Ctrl/Cmd+N opent een gesprek, Ctrl/Cmd+1–5 wisselt t
 Gemini gebruikt de [officiële OpenAI-compatibiliteitsroute](https://ai.google.dev/gemini-api/docs/openai), met serverauthenticatie. Geen nieuwe sleutels of externe providerverzoeken voor deze features. Browser-QA: `DELPHI_PLAYWRIGHT=/pad/naar/playwright node tests/features.cjs`; bestaande regressie: `node tests/browser.cjs` met dezelfde variabele.
 
 Dashboard: zesde tab met aantallen, inspecties, vijf DELPHI-commits en lokale modellen. Laden bij openen/verversen; fouten in één gegevensbron laten de andere kaarten beschikbaar. Ctrl/Cmd+6 opent het dashboard.
+
+Bestanden slepen: tekst/broncode als UTF-8 concept, maximaal 100 KB per bestand én sleepactie. Binaire/onleesbare bestanden worden afgewezen. Bestaande concepttekst blijft behouden, backtick-fences in bronbestanden blijven intact. Geen upload of automatische verzending; een gesprek wisselen/versturen voorkomt late toevoeging aan het volgende concept.
