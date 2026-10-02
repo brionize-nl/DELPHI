@@ -110,12 +110,26 @@ const server=http.createServer(async(req,res)=>{
    const panels=await page.locator('.compare-panel').all();const first=await panels[0].boundingBox(),second=await panels[1].boundingBox();assert.ok(second.y>first.y);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
    await page.click('#btn-compare-close');await page.setViewportSize({width:1280,height:720});tested++;
   }
-  // Later feature PRs extend this test on the same branch stack.
+  if(await page.evaluate(()=>typeof discussInspection==='function')) {
+   await page.keyboard.press('Control+5');await page.waitForFunction(()=>inspectionReports.length===1);
+   const before=bodies.length;await page.locator('#inspection-projects button').filter({hasText:'Bespreek in chat'}).click();
+   assert.equal(bodies.length,before);assert.equal(await page.locator('#view-chat').isVisible(),true);assert.match(await page.locator('#chat-context').innerText(),/Watchdog/);
+   assert.equal(await page.locator('#chat .msg').count(),0);assert.match(await page.locator('#prompt').inputValue(),/Leg deze bevindingen/);
+   await page.selectOption('#provider-select','ollama');await page.waitForFunction(()=>document.querySelector('#model-select').options.length===2);
+   await page.fill('#prompt','Waarom is dit een bug?');await page.keyboard.press('Control+Enter');await page.waitForFunction(()=>!generating && !historyRunning);
+   const sent=bodies.at(-1);assert.equal(sent.messages.filter(m=>m.role==='system').length,1);assert.match(sent.messages[0].content,/console.log\(missing\)/);assert.match(sent.messages[0].content,/niet bewezen/);
+   assert.equal(await page.locator('#chat img[src="x"]').count(),0);
+   const id=await page.evaluate(()=>activeConvId);assert.equal(chats.get(id).messages[0].role,'system');
+   await page.reload();await page.waitForFunction(()=>historyReady && !historyRunning);assert.equal(await page.locator('#chat-context').isVisible(),true);assert.equal(await page.locator('#chat .msg').count(),2);
+   await page.evaluate(()=>discussInspection({project:'Lang',repo:'test',status:'findings',findings:[{file:'x',proposal:'x'.repeat(20000)}]}));
+   assert.match(await page.evaluate(()=>conversations[activeConvId].messages[0].content),/Rapport ingekort/);tested++;
+  }
+
   if(process.env.EXPECT_FEATURES)assert.equal(tested,Number(process.env.EXPECT_FEATURES));
   assert.deepEqual(errors,[]);
   const fallback=await browser.newContext({serviceWorkers:'block'});await fallback.addInitScript(()=>{localStorage.setItem('olla_apikey','test-key');Object.defineProperty(window,'SpeechRecognition',{value:undefined});Object.defineProperty(window,'webkitSpeechRecognition',{value:undefined});});
   const fallbackPage=await fallback.newPage();await fallbackPage.goto(url);assert.equal(await fallbackPage.locator('#btn-voice').isVisible(),false);await fallback.close();
   await page.setViewportSize({width:375,height:812});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-  console.log('PASS: '+tested+' feature groups; speech draft/denial/fallback, shortcuts, full-text debounce/highlight, UTF-8 Markdown download, Gemini paths and URL/XSS safety.');
+  console.log('PASS: '+tested+' feature groups; speech, shortcuts, export, search, dashboard, file drop, model comparison, watchdog context; Gemini paths and URL/XSS safety.');
  } finally {await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;server.close();});

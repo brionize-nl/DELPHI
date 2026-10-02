@@ -1200,3 +1200,6 @@ mark { background:var(--accent-dim); color:var(--text); border-radius:2px; }
 .compare-panel [role="status"] { font-size:12px; color:var(--text-muted); margin:8px 0; }
 .comparison-output { width:100%; max-width:100%; margin:0; padding:0; background:none; max-height:40vh; overflow:auto; }
 @media (max-width:768px) { .compare-panels,.compare-models { flex-direction:column; } .modal.compare-modal { padding:16px; } }
+
+#chat-context[hidden] { display: none; }
+#chat-context { margin: 0; color: var(--text-muted); overflow-wrap: anywhere; }

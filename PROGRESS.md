@@ -73,3 +73,5 @@
 ✅ Bestand slepen gebouwd/getest op `codex/chat-files`: UTF-8 FileReader, maximaal 100 KB per bestand/sleepactie, tekst/code, concept zonder upload/auto-send, visuele dropfeedback.
 
 ✅ Modelvergelijking op `codex/model-compare`: twee lokale modellen, dezelfde context/vraag, parallelle streams, afzonderlijke foutstatus, annuleren en mobiele split-view.
+
+✅ Watchdog bespreken gebouwd/getest op `codex/watchdog-chat`: nieuw gesprek met bewaarde systeemcontext, bronbewijs, expliciet onbewezen voorstellen, geen auto-send; herladen en begrensde rapporten getest. Cache v21. Acht featuregroepen browser-QA geslaagd; feature-PRs blijven open voor eigenaar.

@@ -242,9 +242,13 @@ function switchConv(id) {
   presetSelect.value = conv.preset || '';
   convNameEl.textContent = conv.title;
   chat.querySelectorAll('.msg').forEach(m => m.remove());
-  welcome.style.display = conv.messages.length ? 'none' : '';
+  const contextual = conv.messages.some(m => m.role === 'system');
+  const contextNote = $('#chat-context');
+  contextNote.hidden = !contextual;
+  contextNote.textContent = contextual ? 'Gesprekscontext: ' + conv.title + ' — bevindingen kunnen onbewezen zijn.' : '';
+  welcome.style.display = conv.messages.some(m => m.role !== 'system') || contextual ? 'none' : '';
 
-  conv.messages.forEach(m => appendMsg(m.role, m.content, false, {provider: m.provider || conv.provider || 'ollama', model: m.model || conv.model || ''}));
+  conv.messages.filter(m => m.role !== 'system').forEach(m => appendMsg(m.role, m.content, false, {provider: m.provider || conv.provider || 'ollama', model: m.model || conv.model || ''}));
   chat.scrollTop = chat.scrollHeight;
   renderConvList($('#conv-search').value);
 }
@@ -496,11 +500,25 @@ async function send(text) {
   promptEl.focus();
 }
 
+function startContextConversation(title, context, draft = '') {
+  newConv();
+  const conv = conversations[activeConvId];
+  conv.title = String(title).slice(0, 200);
+  conv.messages.push({role: 'system', content: String(context)});
+  conv.updated = Date.now();
+  saveConversations();
+  switchConv(conv.id);
+  changeTab('chat');
+  promptEl.value = draft;
+  autoResize();
+  promptEl.focus();
+}
+
 function buildMessages(conv) {
-  const sys = getActiveSystemPrompt();
-  const msgs = [];
-  if (sys) msgs.push({ role: 'system', content: sys });
-  msgs.push(...conv.messages.map(({role, content}) => ({role, content})));
+  // Combine context into one system message: Claude consumes the first system message.
+  const system = [getActiveSystemPrompt(), ...conv.messages.filter(m => m.role === 'system').map(m => m.content)].filter(Boolean).join('\n\n');
+  const msgs = system ? [{role: 'system', content: system}] : [];
+  msgs.push(...conv.messages.filter(m => m.role !== 'system').map(({role, content}) => ({role, content})));
   return msgs;
 }
 

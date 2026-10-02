@@ -42,6 +42,7 @@ class HistoryTests(unittest.TestCase):
 
     def test_roundtrip_search_metadata_delete(self):
         c = self.chat()
+        c['messages'].insert(0, {'role': 'system', 'content': 'Watchdog: onbewezen bevinding — console.log(missing);'})
         self.assertEqual(self.request('/api/history', 'POST', c)[0], 200)
         self.assertEqual(self.request('/api/history/test-123')[1], c)
         self.assertEqual(self.request('/api/history/list')[1][0]['project'], 'delphi')
