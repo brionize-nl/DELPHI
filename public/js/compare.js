@@ -30,6 +30,26 @@ async function openComparison() {
 function closeComparison() {
   compareModelsRequest++;compareController?.abort();$('#compare-modal')?.classList.remove('open');
 }
+
+function saveComparisonConv(model, prompt, response) {
+  const id = genId();
+  const preview = prompt.length > 40 ? prompt.slice(0, 40) + '…' : prompt;
+  conversations[id] = {
+    id,
+    title: 'Vergelijking: ' + model + ' — ' + preview,
+    messages: [
+      { role: 'user', content: prompt },
+      { role: 'assistant', content: response, provider: 'ollama', model }
+    ],
+    created: Date.now(),
+    updated: Date.now(),
+    provider: 'ollama',
+    model
+  };
+  saveConversations();
+  return id;
+}
+
 async function runComparison() {
   if(compareController)return;
   const prompt=$('#compare-prompt').value.trim();
@@ -47,11 +67,22 @@ async function runComparison() {
       await readChatStream(response.body,'ollama',chunk=>{text+=chunk;output.innerHTML=renderMd(text);}); // renderMd escapes source before Markdown rendering.
       if(!text)throw new Error('Geen antwoord ontvangen');
       $('#compare-status-'+side).textContent='Klaar';
+      return text;
     } catch(error) {$('#compare-status-'+side).textContent=error.name==='AbortError'?'Gestopt':error.message;throw error;}
   }));
   if(compareController===controller) {
     compareController=null;comparisonInputs(false);
-    $('#compare-status').textContent=controller.signal.aborted?'Vergelijking gestopt.':outcomes.every(result=>result.status==='fulfilled')?'Vergelijking voltooid.':'Vergelijking afgerond; bekijk de status per model.';
+    const saved = [];
+    outcomes.forEach((result, index) => {
+      if (result.status === 'fulfilled') saved.push(saveComparisonConv(models[index], prompt, result.value));
+    });
+    if (saved.length) renderConvList();
+    const statusMsg = controller.signal.aborted
+      ? 'Vergelijking gestopt.'
+      : outcomes.every(r => r.status === 'fulfilled')
+        ? 'Vergelijking voltooid — ' + saved.length + ' gesprekken opgeslagen.'
+        : 'Vergelijking afgerond; bekijk de status per model.';
+    $('#compare-status').textContent = statusMsg;
   }
 }
 $('#btn-compare')?.addEventListener('click',openComparison);
