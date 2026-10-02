@@ -65,7 +65,7 @@ echo "Caddyfile installeren..."
 CADDY_TEMP=$(mktemp /etc/caddy/ollama.caddyfile.XXXXXX)
 trap 'rm -f "$CADDY_TEMP"' EXIT
 sed "s|__OLLAMA_API_KEY__|$API_KEY|g" "$SCRIPT_DIR/Caddyfile" > "$CADDY_TEMP"
-for PROVIDER in CLAUDE OPENAI MISTRAL; do
+for PROVIDER in CLAUDE OPENAI MISTRAL GITHUB; do
     PROVIDER_FILE="/etc/caddy/${PROVIDER,,}-api-key"
     if [ -f "$PROVIDER_FILE" ]; then
         chown root:root "$PROVIDER_FILE"
@@ -154,5 +154,5 @@ echo "=== Provider keys instellen (optioneel) ==="
 echo "Lees een sleutel verborgen in en schrijf hem zonder terminaluitvoer:"
 echo 'read -rsp "Provider key: " PROVIDER_KEY; echo'
 echo 'printf "%s\n" "$PROVIDER_KEY" | sudo install -m 600 /dev/stdin /etc/caddy/claude-api-key; unset PROVIDER_KEY'
-echo "Gebruik openai-api-key of mistral-api-key voor de andere providers."
+echo "Gebruik openai-api-key, mistral-api-key of github-api-key voor de andere providers."
 echo "Na het instellen: sudo bash setup.sh"

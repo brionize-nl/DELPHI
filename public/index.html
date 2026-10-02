@@ -823,11 +823,11 @@ select, button, input, textarea {
   .tab-bar { gap: 2px; padding: 6px 8px; }
   .tab-btn { font-size: 12px; padding: 7px 10px; gap: 5px; }
   .tab-btn svg { width: 14px; height: 14px; }
-  .tasks-header { flex-wrap: wrap; }
-  .task-filters { width: 100%; }
-  .task-filters select { flex: 1; }
-  .stat-grid { grid-template-columns: repeat(2, 1fr); }
-  .activity-item { flex-wrap: wrap; }
+  .werkplaats-header { flex-wrap: wrap; }
+  .werkplaats-header select { flex: 1; }
+  .repo-section-header { flex-wrap: wrap; }
+  .lp-grid { grid-template-columns: 1fr !important; }
+  .lp-card { padding: 14px; }
 }
 
 /* ── Tab bar ── */
@@ -879,26 +879,23 @@ select, button, input, textarea {
 .view { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 .view.hidden { display: none; }
 
-/* ── Tasks view ── */
-.tasks-header {
+/* ── Werkplaats view ── */
+.werkplaats-view {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.werkplaats-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
+  margin-bottom: 16px;
 }
 
-.tasks-header h2 { font-size: 16px; font-weight: 600; white-space: nowrap; }
+.werkplaats-header h2 { font-size: 16px; font-weight: 600; flex: 1; }
 
-.task-filters {
-  display: flex;
-  gap: 6px;
-  flex: 1;
-  min-width: 0;
-}
-
-.task-filters select {
+.werkplaats-header select {
   background: var(--bg-input);
   color: var(--text);
   border: 1px solid var(--border);
@@ -906,250 +903,241 @@ select, button, input, textarea {
   padding: 6px 10px;
   font-size: 13px;
   font-family: inherit;
-  cursor: pointer;
 }
 
-.task-filters select:focus { outline: none; border-color: var(--accent); }
-
-.btn-new-task {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 8px 14px;
+.btn-refresh {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
   cursor: pointer;
-  white-space: nowrap;
-  font-family: inherit;
   display: flex;
   align-items: center;
-  gap: 5px;
-  transition: background 0.15s;
-}
-
-.btn-new-task:hover { background: var(--accent-hover); }
-
-.task-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.task-card {
-  background: var(--bg-msg-ai);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  cursor: pointer;
+  justify-content: center;
   transition: all 0.15s;
 }
 
-.task-card:hover { border-color: var(--accent); }
+.btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+.btn-refresh.spinning svg { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.task-card-top {
+.repo-section {
+  margin-bottom: 20px;
+}
+
+.repo-section-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 6px;
+  gap: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
 }
 
-.task-status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.task-status-dot.nieuw { background: #3b82f6; }
-.task-status-dot.bezig { background: #f59e0b; }
-.task-status-dot.review { background: #8b5cf6; }
-.task-status-dot.klaar { background: #22c55e; }
-
-.task-card-title {
+.repo-section-header h3 {
   font-size: 14px;
   font-weight: 600;
   flex: 1;
+}
+
+.repo-section-header .repo-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--accent);
+}
+
+.gh-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg-msg-ai);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 6px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+
+.gh-item:hover { border-color: var(--accent); }
+
+.gh-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--text-dim);
+}
+
+.gh-item-body { flex: 1; min-width: 0; }
+
+.gh-item-title {
+  font-size: 13px;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.task-card-assignee {
+.gh-item-meta {
   font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 6px;
+  color: var(--text-muted);
+  display: flex;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.gh-pr-status {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
   flex-shrink: 0;
+  align-self: center;
 }
 
-.task-card-assignee.claude { background: rgba(249, 115, 22, 0.15); color: #f97316; }
-.task-card-assignee.codex { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-.task-card-assignee.mistral { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-.task-card-assignee.gemini { background: rgba(66, 133, 244, 0.15); color: #4285f4; }
-.task-card-assignee.ollama { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
+.gh-pr-status.open { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.gh-pr-status.merged { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+.gh-pr-status.closed { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 
-.task-card-desc {
-  font-size: 13px;
+.gh-empty {
+  text-align: center;
+  padding: 40px 16px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.gh-not-connected {
+  background: var(--bg-msg-ai);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
   color: var(--text-dim);
-  margin-bottom: 8px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font-size: 13px;
 }
 
-.task-card-meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 11px;
-  color: var(--text-muted);
+.gh-not-connected p { margin-bottom: 8px; }
+.gh-not-connected code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
 }
 
-.task-card-meta span {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.task-empty {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  color: var(--text-muted);
-  padding: 32px;
-}
-
-.task-empty svg { opacity: 0.4; }
-.task-empty p { font-size: 14px; }
-
-/* ── Status view ── */
-.status-view {
+/* ── Launchpad view ── */
+.launchpad-view {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
 }
 
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+.lp-section {
   margin-bottom: 24px;
 }
 
-.stat-card {
-  background: var(--bg-msg-ai);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-}
-
-.stat-card .stat-val {
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.stat-card .stat-label {
+.lp-section-title {
   font-size: 12px;
+  font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  padding-left: 4px;
 }
 
-.stat-card .stat-val.blue { color: #3b82f6; }
-.stat-card .stat-val.orange { color: #f59e0b; }
-.stat-card .stat-val.purple { color: #8b5cf6; }
-.stat-card .stat-val.green { color: #22c55e; }
-
-.status-section {
-  margin-bottom: 24px;
-}
-
-.status-section h3 {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  color: var(--text-dim);
-}
-
-.activity-list {
-  display: flex;
-  flex-direction: column;
+.lp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 }
 
-.activity-item {
+.lp-card {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
+  padding: 14px 16px;
   background: var(--bg-msg-ai);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  font-size: 13px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.15s;
 }
 
-.activity-dot {
-  width: 8px;
-  height: 8px;
+.lp-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+.lp-dot {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-.activity-text { flex: 1; color: var(--text-dim); }
-.activity-text strong { color: var(--text); font-weight: 600; }
-.activity-time { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+.lp-card-info { flex: 1; min-width: 0; }
 
-.status-empty {
-  text-align: center;
-  padding: 40px;
-  color: var(--text-muted);
+.lp-card-name {
   font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.n8n-status {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  background: var(--bg-msg-ai);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: 13px;
-  color: var(--text-dim);
-}
-
-.n8n-status .n8n-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--text-muted);
-}
-
-.n8n-status .n8n-dot.connected { background: var(--success); }
-
-.n8n-config-hint {
-  font-size: 12px;
+.lp-card-desc {
+  font-size: 11px;
   color: var(--text-muted);
-  margin-top: 8px;
-  padding: 8px 12px;
-  background: rgba(99, 102, 241, 0.05);
-  border-radius: 8px;
-  border: 1px dashed var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+.lp-card .lp-arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.lp-card:hover .lp-arrow { color: var(--accent); }
+
+.lp-add-row {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+}
+
+.lp-add-row input {
+  flex: 1;
+  background: var(--bg-input);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.lp-add-row input:focus { outline: none; border-color: var(--accent); }
+.lp-add-row input::placeholder { color: var(--text-muted); }
+
+.lp-add-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.lp-add-btn:hover { border-color: var(--accent); color: var(--accent); }
 </style>
 </head>
 <body>
@@ -1260,14 +1248,13 @@ select, button, input, textarea {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       Chat
     </button>
-    <button class="tab-btn" data-tab="taken">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-      Taken
-      <span class="tab-badge" id="tasks-badge" style="display:none">0</span>
+    <button class="tab-btn" data-tab="werkplaats">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+      Werkplaats
     </button>
-    <button class="tab-btn" data-tab="status">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-      Status
+    <button class="tab-btn" data-tab="launchpad">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Launchpad
     </button>
   </div>
 
@@ -1277,7 +1264,7 @@ select, button, input, textarea {
     <div class="welcome" id="welcome">
       <img src="/icon-192.svg" alt="" width="64" height="64" style="opacity:0.8">
       <h2>DELPHI — AI Command Center</h2>
-      <p>Chat met Ollama, beheer taken voor je AI-team, en volg de voortgang.</p>
+      <p>Jouw AI cockpit — chat, GitHub werkplaats en alle tools op één plek.</p>
       <div class="welcome-prompts">
         <button class="welcome-prompt" data-prompt="Schrijf een Python script dat alle duplicate bestanden in een map vindt en verwijdert">
           <span class="wp-icon">&#128187;</span>
@@ -1312,62 +1299,96 @@ select, button, input, textarea {
   </div>
   </div><!-- /view-chat -->
 
-  <!-- Taken view -->
-  <div class="view hidden" id="view-taken">
-    <div class="tasks-header">
-      <h2>Taken</h2>
-      <div class="task-filters">
-        <select id="task-filter-status">
-          <option value="">Alle statussen</option>
-          <option value="nieuw">Nieuw</option>
-          <option value="bezig">Bezig</option>
-          <option value="review">Review</option>
-          <option value="klaar">Klaar</option>
+  <!-- Werkplaats view -->
+  <div class="view hidden" id="view-werkplaats">
+    <div class="werkplaats-view">
+      <div class="werkplaats-header">
+        <h2>Werkplaats</h2>
+        <select id="wp-repo-filter">
+          <option value="">Alle repos</option>
         </select>
-        <select id="task-filter-assignee">
-          <option value="">Alle toewijzingen</option>
-          <option value="claude">Claude</option>
-          <option value="codex">Codex</option>
-          <option value="mistral">Mistral</option>
-          <option value="gemini">Gemini</option>
-          <option value="ollama">Ollama</option>
-        </select>
+        <button class="btn-refresh" id="btn-wp-refresh" title="Ververs">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        </button>
       </div>
-      <button class="btn-new-task" id="btn-new-task">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-        Nieuwe taak
-      </button>
+      <div id="wp-content">
+        <div class="gh-empty">Laden...</div>
+      </div>
     </div>
-    <div class="task-list" id="task-list"></div>
   </div>
 
-  <!-- Status view -->
-  <div class="view hidden" id="view-status">
-    <div class="status-view">
-      <div class="stat-grid" id="stat-grid">
-        <div class="stat-card"><div class="stat-val blue" id="stat-total">0</div><div class="stat-label">Totaal</div></div>
-        <div class="stat-card"><div class="stat-val orange" id="stat-bezig">0</div><div class="stat-label">Bezig</div></div>
-        <div class="stat-card"><div class="stat-val purple" id="stat-review">0</div><div class="stat-label">Review</div></div>
-        <div class="stat-card"><div class="stat-val green" id="stat-klaar">0</div><div class="stat-label">Klaar</div></div>
+  <!-- Launchpad view -->
+  <div class="view hidden" id="view-launchpad">
+    <div class="launchpad-view">
+
+      <div class="lp-section">
+        <div class="lp-section-title">AI Tools</div>
+        <div class="lp-grid">
+          <a href="https://claude.ai/code" target="_blank" rel="noopener" class="lp-card">
+            <span class="lp-dot" style="background:#f97316"></span>
+            <div class="lp-card-info"><div class="lp-card-name">Claude Code</div><div class="lp-card-desc">AI pair programmer</div></div>
+            <svg class="lp-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+          </a>
+          <a href="https://chatgpt.com" target="_blank" rel="noopener" class="lp-card">
+            <span class="lp-dot" style="background:#10b981"></span>
+            <div class="lp-card-info"><div class="lp-card-name">ChatGPT</div><div class="lp-card-desc">OpenAI chat</div></div>
+            <svg class="lp-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+          </a>
+          <a href="https://chat.mistral.ai" target="_blank" rel="noopener" class="lp-card">
+            <span class="lp-dot" style="background:#3b82f6"></span>
+            <div class="lp-card-info"><div class="lp-card-name">Mistral</div><div class="lp-card-desc">Le Chat</div></div>
+            <svg class="lp-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+          </a>
+          <a href="https://gemini.google.com" target="_blank" rel="noopener" class="lp-card">
+            <span class="lp-dot" style="background:#4285f4"></span>
+            <div class="lp-card-info"><div class="lp-card-name">Gemini</div><div class="lp-card-desc">Google AI</div></div>
+            <svg class="lp-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+          </a>
+        </div>
       </div>
 
-      <div class="status-section">
-        <h3>n8n Verbinding</h3>
-        <div class="n8n-status">
-          <span class="n8n-dot" id="n8n-dot"></span>
-          <span id="n8n-status-text">Niet verbonden</span>
-        </div>
-        <div class="n8n-config-hint">
-          n8n wordt later gekoppeld. Taken worden lokaal opgeslagen tot de verbinding actief is.
+      <div class="lp-section">
+        <div class="lp-section-title">Projecten</div>
+        <div class="lp-grid">
+          <a href="https://github.com/brionize-nl/DELPHI" target="_blank" rel="noopener" class="lp-card">
+            <span class="lp-dot" style="background:#6366f1"></span>
+            <div class="lp-card-info"><div class="lp-card-name">DELPHI</div><div class="lp-card-desc">AI Command Center</div></div>
+            <svg class="lp-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+          </a>
+          <a href="https://github.com/brionize-nl/Brionicle" target="_blank" rel="noopener" class="lp-card">
+            <span class="lp-dot" style="background:#8b5cf6"></span>
+            <div class="lp-card-info"><div class="lp-card-name">Brionicle</div><div class="lp-card-desc">Interactieve wereldkaart</div></div>
+            <svg class="lp-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+          </a>
+          <a href="https://github.com/brionize-nl" target="_blank" rel="noopener" class="lp-card">
+            <span class="lp-dot" style="background:#8b5cf6"></span>
+            <div class="lp-card-info"><div class="lp-card-name">GitHub profiel</div><div class="lp-card-desc">brionize-nl</div></div>
+            <svg class="lp-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+          </a>
         </div>
       </div>
 
-      <div class="status-section">
-        <h3>Recente activiteit</h3>
-        <div class="activity-list" id="activity-list">
-          <div class="status-empty">Nog geen activiteit</div>
+      <div class="lp-section">
+        <div class="lp-section-title">Infrastructuur</div>
+        <div class="lp-grid" id="lp-infra-grid">
+          <a href="https://ollama.brionize.nl" class="lp-card">
+            <span class="lp-dot" style="background:#6366f1"></span>
+            <div class="lp-card-info"><div class="lp-card-name">DELPHI PWA</div><div class="lp-card-desc">ollama.brionize.nl</div></div>
+            <svg class="lp-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+          </a>
         </div>
       </div>
+
+      <div class="lp-section">
+        <div class="lp-section-title">Eigen links toevoegen</div>
+        <div class="lp-grid" id="lp-custom-grid"></div>
+        <div class="lp-add-row">
+          <input type="text" id="lp-add-name" placeholder="Naam">
+          <input type="text" id="lp-add-url" placeholder="https://...">
+          <button class="lp-add-btn" id="btn-lp-add">Toevoegen</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1395,74 +1416,6 @@ select, button, input, textarea {
       <button class="btn btn-danger" id="btn-clear-all">Wis alles</button>
       <button class="btn btn-ghost" id="btn-cancel">Annuleer</button>
       <button class="btn btn-primary" id="btn-save">Opslaan</button>
-    </div>
-  </div>
-</div>
-
-<!-- Task modal -->
-<div class="modal-overlay" id="task-modal">
-  <div class="modal">
-    <h3 id="task-modal-title">Nieuwe taak</h3>
-    <div class="field">
-      <label for="task-title">Titel</label>
-      <input type="text" id="task-title" placeholder="Korte omschrijving van de taak" maxlength="120">
-    </div>
-    <div class="field">
-      <label for="task-desc">Beschrijving</label>
-      <textarea id="task-desc" placeholder="Wat moet er precies gebeuren? Wees specifiek."></textarea>
-    </div>
-    <div class="field">
-      <label for="task-assignee">Toewijzing</label>
-      <select id="task-assignee">
-        <option value="claude">Claude</option>
-        <option value="codex">Codex (ChatGPT)</option>
-        <option value="mistral">Mistral</option>
-        <option value="gemini">Gemini</option>
-        <option value="ollama">Ollama (lokaal)</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="task-priority">Prioriteit</label>
-      <select id="task-priority">
-        <option value="normaal">Normaal</option>
-        <option value="hoog">Hoog</option>
-        <option value="laag">Laag</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="task-branch">Branch (optioneel)</label>
-      <input type="text" id="task-branch" placeholder="bijv. claude/feature-naam">
-      <div class="field-hint">Wordt automatisch aangemaakt door n8n wanneer gekoppeld</div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-danger" id="btn-task-delete" style="display:none;margin-right:auto">Verwijder</button>
-      <button class="btn btn-ghost" id="btn-task-cancel">Annuleer</button>
-      <button class="btn btn-primary" id="btn-task-save">Opslaan</button>
-    </div>
-  </div>
-</div>
-
-<!-- Task detail modal -->
-<div class="modal-overlay" id="task-detail-modal">
-  <div class="modal" style="max-width:560px">
-    <h3 id="task-detail-title">Taak</h3>
-    <div style="margin-bottom:14px">
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-        <span class="task-status-dot" id="task-detail-dot"></span>
-        <select id="task-detail-status" style="background:var(--bg-input);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;font-family:inherit">
-          <option value="nieuw">Nieuw</option>
-          <option value="bezig">Bezig</option>
-          <option value="review">Review</option>
-          <option value="klaar">Klaar</option>
-        </select>
-        <span class="task-card-assignee" id="task-detail-assignee"></span>
-      </div>
-      <p style="color:var(--text-dim);font-size:13px;white-space:pre-wrap" id="task-detail-desc"></p>
-    </div>
-    <div style="font-size:12px;color:var(--text-muted);display:flex;flex-direction:column;gap:4px" id="task-detail-meta"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" id="btn-task-edit" style="margin-right:auto">Bewerken</button>
-      <button class="btn btn-ghost" id="btn-task-detail-close">Sluiten</button>
     </div>
   </div>
 </div>
@@ -2144,6 +2097,7 @@ $('#settings-modal').addEventListener('click', e => {
 let activeTab = 'chat';
 const tabBar = $('#tab-bar');
 const chatControls = $('.header-controls');
+const TABS = ['chat', 'werkplaats', 'launchpad'];
 
 tabBar.addEventListener('click', e => {
   const btn = e.target.closest('.tab-btn');
@@ -2152,266 +2106,177 @@ tabBar.addEventListener('click', e => {
   if (tab === activeTab) return;
   activeTab = tab;
   tabBar.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-  ['chat', 'taken', 'status'].forEach(v => {
+  TABS.forEach(v => {
     const el = $('#view-' + v);
     if (el) el.classList.toggle('hidden', v !== tab);
   });
   chatControls.style.display = tab === 'chat' ? '' : 'none';
-  if (tab === 'taken') renderTasks();
-  if (tab === 'status') renderStatus();
+  if (tab === 'werkplaats') loadWerkplaats();
+  if (tab === 'launchpad') renderCustomLinks();
 });
 
-// ── Tasks (localStorage) ──
-let tasks = {};
-let editingTaskId = null;
+// ── Werkplaats (GitHub) ──
+const GH_REPOS = ['brionize-nl/DELPHI', 'brionize-nl/Brionicle'];
+let wpCache = {};
 
-function loadTasks() {
+async function ghFetch(path) {
+  const key = apiKey();
+  if (!key) return null;
   try {
-    const raw = localStorage.getItem('delphi_tasks');
-    if (raw) tasks = JSON.parse(raw);
-  } catch {}
+    const res = await fetch('/api/github/' + path, { headers: { 'X-API-Key': key } });
+    if (!res.ok) return null;
+    return res.json();
+  } catch { return null; }
 }
 
-function saveTasks() {
-  try { localStorage.setItem('delphi_tasks', JSON.stringify(tasks)); } catch {}
-}
+async function loadWerkplaats() {
+  const content = $('#wp-content');
+  const refreshBtn = $('#btn-wp-refresh');
+  const repoFilter = $('#wp-repo-filter').value;
+  refreshBtn.classList.add('spinning');
 
-function loadActivity() {
-  try {
-    const raw = localStorage.getItem('delphi_activity');
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
-}
+  const repos = repoFilter ? [repoFilter] : GH_REPOS;
+  let hasData = false;
+  let html = '';
 
-function addActivity(text, type = 'task') {
-  const activity = loadActivity();
-  activity.unshift({ text, type, time: Date.now() });
-  if (activity.length > 50) activity.length = 50;
-  try { localStorage.setItem('delphi_activity', JSON.stringify(activity)); } catch {}
-}
+  for (const repo of repos) {
+    const [branches, pulls, commits] = await Promise.all([
+      ghFetch(`repos/${repo}/branches?per_page=10`),
+      ghFetch(`repos/${repo}/pulls?state=all&per_page=5&sort=updated`),
+      ghFetch(`repos/${repo}/commits?per_page=8`)
+    ]);
 
-function renderTasks() {
-  const list = $('#task-list');
-  const statusFilter = $('#task-filter-status').value;
-  const assigneeFilter = $('#task-filter-assignee').value;
+    if (!branches && !pulls && !commits) continue;
+    hasData = true;
+    const repoName = repo.split('/')[1];
 
-  const sorted = Object.values(tasks).sort((a, b) => {
-    const order = { hoog: 0, normaal: 1, laag: 2 };
-    if ((order[a.priority] || 1) !== (order[b.priority] || 1)) return (order[a.priority] || 1) - (order[b.priority] || 1);
-    return b.updated - a.updated;
-  });
+    html += `<div class="repo-section">`;
+    html += `<div class="repo-section-header"><h3>${escapeHtml(repoName)}</h3><span class="repo-badge">${branches ? branches.length + ' branches' : ''}</span></div>`;
 
-  const filtered = sorted.filter(t => {
-    if (statusFilter && t.status !== statusFilter) return false;
-    if (assigneeFilter && t.assignee !== assigneeFilter) return false;
-    return true;
-  });
+    if (pulls && pulls.length) {
+      html += pulls.map(pr => `
+        <a href="${escapeHtml(pr.html_url)}" target="_blank" rel="noopener" class="gh-item">
+          <svg class="gh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 012 2v7"/><path d="M6 9v12"/></svg>
+          <div class="gh-item-body">
+            <div class="gh-item-title">#${pr.number} ${escapeHtml(pr.title)}</div>
+            <div class="gh-item-meta">
+              <span>${escapeHtml(pr.user?.login || '')}</span>
+              <span>${timeAgo(new Date(pr.updated_at).getTime())}</span>
+              <span>${escapeHtml(pr.head?.ref || '')}</span>
+            </div>
+          </div>
+          <span class="gh-pr-status ${pr.merged_at ? 'merged' : pr.state}">${pr.merged_at ? 'merged' : pr.state}</span>
+        </a>
+      `).join('');
+    }
 
-  updateTaskBadge();
+    if (commits && commits.length) {
+      html += `<div style="margin-top:8px;margin-bottom:6px;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;font-weight:600">Recente commits</div>`;
+      html += commits.slice(0, 5).map(c => {
+        const author = c.commit?.author?.name || c.author?.login || 'onbekend';
+        const msg = (c.commit?.message || '').split('\n')[0];
+        const sha = (c.sha || '').slice(0, 7);
+        return `
+          <a href="${escapeHtml(c.html_url || '#')}" target="_blank" rel="noopener" class="gh-item">
+            <svg class="gh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 3v6m0 6v6"/></svg>
+            <div class="gh-item-body">
+              <div class="gh-item-title">${escapeHtml(msg)}</div>
+              <div class="gh-item-meta">
+                <span>${escapeHtml(author)}</span>
+                <span>${sha}</span>
+                <span>${timeAgo(new Date(c.commit?.author?.date || 0).getTime())}</span>
+              </div>
+            </div>
+          </a>`;
+      }).join('');
+    }
 
-  if (!filtered.length) {
-    list.innerHTML = `
-      <div class="task-empty">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-        <p>${statusFilter || assigneeFilter ? 'Geen taken met deze filters' : 'Nog geen taken aangemaakt'}</p>
-        ${!statusFilter && !assigneeFilter ? '<button class="btn btn-primary" onclick="openNewTask()">Eerste taak aanmaken</button>' : ''}
-      </div>`;
-    return;
+    html += `</div>`;
   }
 
-  list.innerHTML = filtered.map(t => `
-    <div class="task-card" data-id="${t.id}" onclick="openTaskDetail('${t.id}')">
-      <div class="task-card-top">
-        <span class="task-status-dot ${t.status}"></span>
-        <span class="task-card-title">${escapeHtml(t.title)}</span>
-        <span class="task-card-assignee ${t.assignee}">${escapeHtml(t.assignee)}</span>
-      </div>
-      ${t.description ? `<div class="task-card-desc">${escapeHtml(t.description)}</div>` : ''}
-      <div class="task-card-meta">
-        <span>${t.status}</span>
-        ${t.branch ? `<span>&#8618; ${escapeHtml(t.branch)}</span>` : ''}
-        <span>${timeAgo(t.updated)}</span>
-        ${t.priority === 'hoog' ? '<span style="color:var(--error)">&#9650; hoog</span>' : ''}
-      </div>
-    </div>
-  `).join('');
-}
+  if (!hasData) {
+    html = `<div class="gh-not-connected">
+      <p><strong>GitHub niet verbonden</strong></p>
+      <p>Stel een Personal Access Token in op de VPS:</p>
+      <p><code>sudo install -m 600 /dev/stdin /etc/caddy/github-api-key</code></p>
+      <p style="margin-top:4px;font-size:12px;color:var(--text-muted)">Daarna: <code>sudo bash setup.sh</code></p>
+    </div>`;
+  }
 
-function updateTaskBadge() {
-  const active = Object.values(tasks).filter(t => t.status !== 'klaar').length;
-  const badge = $('#tasks-badge');
-  if (active > 0) {
-    badge.textContent = active;
-    badge.style.display = '';
-  } else {
-    badge.style.display = 'none';
+  content.innerHTML = html;
+  refreshBtn.classList.remove('spinning');
+
+  const filter = $('#wp-repo-filter');
+  if (filter.options.length <= 1) {
+    GH_REPOS.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r;
+      opt.textContent = r.split('/')[1];
+      filter.appendChild(opt);
+    });
   }
 }
 
 function timeAgo(ts) {
   const diff = (Date.now() - ts) / 1000;
   if (diff < 60) return 'zojuist';
-  if (diff < 3600) return Math.floor(diff / 60) + ' min';
-  if (diff < 86400) return Math.floor(diff / 3600) + ' uur';
-  return Math.floor(diff / 86400) + ' dag' + (Math.floor(diff / 86400) > 1 ? 'en' : '');
+  if (diff < 3600) return Math.floor(diff / 60) + ' min geleden';
+  if (diff < 86400) return Math.floor(diff / 3600) + ' uur geleden';
+  const days = Math.floor(diff / 86400);
+  return days + ' dag' + (days > 1 ? 'en' : '') + ' geleden';
 }
 
-window.openNewTask = function() {
-  editingTaskId = null;
-  $('#task-modal-title').textContent = 'Nieuwe taak';
-  $('#task-title').value = '';
-  $('#task-desc').value = '';
-  $('#task-assignee').value = 'claude';
-  $('#task-priority').value = 'normaal';
-  $('#task-branch').value = '';
-  $('#btn-task-delete').style.display = 'none';
-  $('#task-modal').classList.add('open');
-  setTimeout(() => $('#task-title').focus(), 50);
-};
+$('#btn-wp-refresh').addEventListener('click', loadWerkplaats);
+$('#wp-repo-filter').addEventListener('change', loadWerkplaats);
 
-function openEditTask(id) {
-  const t = tasks[id];
-  if (!t) return;
-  editingTaskId = id;
-  $('#task-modal-title').textContent = 'Taak bewerken';
-  $('#task-title').value = t.title;
-  $('#task-desc').value = t.description || '';
-  $('#task-assignee').value = t.assignee;
-  $('#task-priority').value = t.priority || 'normaal';
-  $('#task-branch').value = t.branch || '';
-  $('#btn-task-delete').style.display = '';
-  $('#task-modal').classList.add('open');
-  $('#task-detail-modal').classList.remove('open');
-  setTimeout(() => $('#task-title').focus(), 50);
+// ── Launchpad (eigen links) ──
+function loadCustomLinks() {
+  try {
+    const raw = localStorage.getItem('delphi_links');
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
 }
 
-window.openTaskDetail = function(id) {
-  const t = tasks[id];
-  if (!t) return;
-  editingTaskId = id;
-  $('#task-detail-title').textContent = t.title;
-  $('#task-detail-dot').className = 'task-status-dot ' + t.status;
-  $('#task-detail-status').value = t.status;
-  const aEl = $('#task-detail-assignee');
-  aEl.textContent = t.assignee;
-  aEl.className = 'task-card-assignee ' + t.assignee;
-  $('#task-detail-desc').textContent = t.description || 'Geen beschrijving';
-  $('#task-detail-meta').innerHTML = `
-    <span>Prioriteit: ${t.priority || 'normaal'}</span>
-    ${t.branch ? `<span>Branch: ${escapeHtml(t.branch)}</span>` : ''}
-    <span>Aangemaakt: ${new Date(t.created).toLocaleString('nl-NL')}</span>
-    <span>Bijgewerkt: ${new Date(t.updated).toLocaleString('nl-NL')}</span>
-  `;
-  $('#task-detail-modal').classList.add('open');
-};
+function saveCustomLinks(links) {
+  try { localStorage.setItem('delphi_links', JSON.stringify(links)); } catch {}
+}
 
-$('#btn-new-task').addEventListener('click', () => openNewTask());
-
-$('#btn-task-save').addEventListener('click', () => {
-  const title = $('#task-title').value.trim();
-  if (!title) { $('#task-title').focus(); return; }
-
-  if (editingTaskId && tasks[editingTaskId]) {
-    const t = tasks[editingTaskId];
-    t.title = title;
-    t.description = $('#task-desc').value.trim();
-    t.assignee = $('#task-assignee').value;
-    t.priority = $('#task-priority').value;
-    t.branch = $('#task-branch').value.trim();
-    t.updated = Date.now();
-    addActivity(`Taak "${title}" bijgewerkt`, 'update');
-  } else {
-    const id = genId();
-    tasks[id] = {
-      id, title,
-      description: $('#task-desc').value.trim(),
-      assignee: $('#task-assignee').value,
-      priority: $('#task-priority').value,
-      branch: $('#task-branch').value.trim(),
-      status: 'nieuw',
-      created: Date.now(),
-      updated: Date.now()
-    };
-    addActivity(`Nieuwe taak: "${title}" → ${$('#task-assignee').value}`, 'create');
-  }
-
-  saveTasks();
-  $('#task-modal').classList.remove('open');
-  renderTasks();
-});
-
-$('#btn-task-cancel').addEventListener('click', () => {
-  $('#task-modal').classList.remove('open');
-});
-
-$('#btn-task-delete').addEventListener('click', () => {
-  if (!editingTaskId || !tasks[editingTaskId]) return;
-  if (!confirm(`"${tasks[editingTaskId].title}" verwijderen?`)) return;
-  addActivity(`Taak "${tasks[editingTaskId].title}" verwijderd`, 'delete');
-  delete tasks[editingTaskId];
-  saveTasks();
-  editingTaskId = null;
-  $('#task-modal').classList.remove('open');
-  renderTasks();
-});
-
-$('#task-modal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) $('#task-modal').classList.remove('open');
-});
-
-$('#task-detail-modal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) $('#task-detail-modal').classList.remove('open');
-});
-
-$('#btn-task-detail-close').addEventListener('click', () => {
-  $('#task-detail-modal').classList.remove('open');
-});
-
-$('#btn-task-edit').addEventListener('click', () => {
-  if (editingTaskId) openEditTask(editingTaskId);
-});
-
-$('#task-detail-status').addEventListener('change', e => {
-  if (!editingTaskId || !tasks[editingTaskId]) return;
-  const t = tasks[editingTaskId];
-  const oldStatus = t.status;
-  t.status = e.target.value;
-  t.updated = Date.now();
-  $('#task-detail-dot').className = 'task-status-dot ' + t.status;
-  if (oldStatus !== t.status) {
-    addActivity(`"${t.title}": ${oldStatus} → ${t.status}`, 'status');
-  }
-  saveTasks();
-  renderTasks();
-});
-
-$('#task-filter-status').addEventListener('change', renderTasks);
-$('#task-filter-assignee').addEventListener('change', renderTasks);
-
-// ── Status dashboard ──
-function renderStatus() {
-  const all = Object.values(tasks);
-  $('#stat-total').textContent = all.length;
-  $('#stat-bezig').textContent = all.filter(t => t.status === 'bezig').length;
-  $('#stat-review').textContent = all.filter(t => t.status === 'review').length;
-  $('#stat-klaar').textContent = all.filter(t => t.status === 'klaar').length;
-
-  const activity = loadActivity();
-  const actList = $('#activity-list');
-  if (!activity.length) {
-    actList.innerHTML = '<div class="status-empty">Nog geen activiteit</div>';
+function renderCustomLinks() {
+  const grid = $('#lp-custom-grid');
+  const links = loadCustomLinks();
+  if (!links.length) {
+    grid.innerHTML = '';
     return;
   }
-
-  const colors = { create: '#22c55e', update: '#3b82f6', delete: '#ef4444', status: '#f59e0b', task: '#6366f1' };
-  actList.innerHTML = activity.slice(0, 20).map(a => `
-    <div class="activity-item">
-      <span class="activity-dot" style="background:${colors[a.type] || colors.task}"></span>
-      <span class="activity-text">${escapeHtml(a.text)}</span>
-      <span class="activity-time">${timeAgo(a.time)}</span>
-    </div>
+  grid.innerHTML = links.map((l, i) => `
+    <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener" class="lp-card">
+      <span class="lp-dot" style="background:var(--accent)"></span>
+      <div class="lp-card-info"><div class="lp-card-name">${escapeHtml(l.name)}</div><div class="lp-card-desc">${escapeHtml(l.url.replace(/^https?:\/\//, '').split('/')[0])}</div></div>
+      <button onclick="event.preventDefault();event.stopPropagation();removeLink(${i})" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:4px" title="Verwijder">&times;</button>
+    </a>
   `).join('');
 }
+
+window.removeLink = function(i) {
+  const links = loadCustomLinks();
+  if (!confirm(`"${links[i]?.name}" verwijderen?`)) return;
+  links.splice(i, 1);
+  saveCustomLinks(links);
+  renderCustomLinks();
+};
+
+$('#btn-lp-add').addEventListener('click', () => {
+  const name = $('#lp-add-name').value.trim();
+  let url = $('#lp-add-url').value.trim();
+  if (!name || !url) return;
+  if (!url.startsWith('http')) url = 'https://' + url;
+  const links = loadCustomLinks();
+  links.push({ name, url });
+  saveCustomLinks(links);
+  $('#lp-add-name').value = '';
+  $('#lp-add-url').value = '';
+  renderCustomLinks();
+});
 
 // ── Keyboard shortcuts ──
 document.addEventListener('keydown', e => {
@@ -2426,10 +2291,8 @@ document.addEventListener('keydown', e => {
 
 // ── Init ──
 loadConversations();
-loadTasks();
 initPresets();
 updateSendButton();
-updateTaskBadge();
 
 if (Object.keys(conversations).length) {
   const saved = getSetting('active', '');

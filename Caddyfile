@@ -47,6 +47,17 @@ ollama.brionize.nl {
 		}
 	}
 
+	handle /api/github/* {
+		uri strip_prefix /api/github
+		reverse_proxy https://api.github.com {
+			header_up Authorization "Bearer __GITHUB_API_KEY__"
+			header_up Host api.github.com
+			header_up User-Agent DELPHI-PWA
+			header_up -X-API-Key
+			flush_interval -1
+		}
+	}
+
 	handle /api/* {
 		reverse_proxy localhost:11434 {
 			flush_interval -1
