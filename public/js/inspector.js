@@ -16,7 +16,7 @@ async function refreshInspections() {
       const labels={pending:'Fixes wachten op review',clean:'Geen nieuwe problemen gevonden',findings:'Bevindingen beschikbaar',error:'Scan mislukt','not-scanned':'Nog niet gescand',merged:'Gemerged',ignored:'Genegeerd','dry-run':'Testscan, geen branch gepubliceerd',scanning:'Scan bezig'};
       status.textContent=(labels[report.status] || report.status)+' · '+report.fixes.length+' fixes';
       const time=document.createElement('small');
-      time.textContent=report.finished?'Laatste scan: '+new Date(report.finished).toLocaleString('nl-NL')+' · volgende cronrun: rond '+new Date(report.next_scan).toLocaleString('nl-NL')+' · '+report.scanned+' bestanden gecontroleerd, '+report.skipped+' overgeslagen':'';
+      time.textContent=report.finished?'Laatste scan: '+new Date(report.finished).toLocaleString('nl-NL')+' · volgende cronrun: rond '+new Date(report.next_scan).toLocaleString('nl-NL')+' · '+report.scanned+' bestanden gecontroleerd, '+report.skipped+' overgeslagen'+(report.partial?' · Deelrun: verdere bestanden volgen bij een volgende scan.':''):'';
       const view=document.createElement('button');view.textContent='Bekijk';view.addEventListener('click',()=>viewInspection(report));
       row.append(title,status,time,view);root.appendChild(row);
       newest=Math.max(newest,report.finished || 0);
@@ -36,9 +36,13 @@ function viewInspection(report) {
   const heading=document.createElement('h3');heading.textContent=report.project+' — inspectierapport';root.appendChild(heading);
   for(const finding of report.findings || []) {
     const row=document.createElement('section');row.className='chain-step';
-    const title=document.createElement('h4');title.textContent=finding.file+' — '+finding.status;row.appendChild(title);
-    for(const issue of finding.issues || []) {const p=document.createElement('p');p.textContent='Regel '+issue.line+': '+issue.message;row.appendChild(p);}
+    const title=document.createElement('h4');title.textContent=finding.file+' — '+(finding.status==='reported'?'AI-bevinding, niet bewezen':finding.status);row.appendChild(title);
+    for(const issue of finding.issues || []) {
+      const p=document.createElement('p');p.textContent='Regel '+issue.line+': '+issue.message;row.appendChild(p);
+      if(issue.evidence) {const source=document.createElement('pre');source.textContent=issue.evidence;row.appendChild(source);}
+    }
     if(finding.reason) {const p=document.createElement('p');p.textContent=finding.reason;row.appendChild(p);}
+    if(finding.proposal) {const proposal=document.createElement('pre');proposal.textContent=finding.proposal;row.appendChild(proposal);}
     root.appendChild(row);
   }
   if(report.message){const message=document.createElement('p');message.textContent=report.message;root.appendChild(message);}
@@ -48,15 +52,18 @@ function viewInspection(report) {
   const merge=document.createElement('button');merge.textContent='Merge alle fixes';merge.disabled=true;
   const ignore=document.createElement('button');ignore.textContent='Negeer branch';
   compare.addEventListener('click',()=>inspectionAction(async()=>{
-    const result=await githubRequest('repos/'+report.repo+'/compare/main...'+encodeURIComponent(report.branch));
-    if(result.head_commit.sha!==report.head)throw new Error('Fixes-branch gewijzigd; ververs de inspecties.');
+    const ref=await githubRequest('repos/'+report.repo+'/git/ref/heads/'+encodeRepoPath(report.branch));
+    if(ref.object.sha!==report.head)throw new Error('Fixes-branch gewijzigd; ververs de inspecties.');
+    const result=await githubRequest('repos/'+report.repo+'/compare/main...'+report.head);
     diff.textContent=result.files.map(f=>f.filename+'\n'+(f.patch || '(Geen tekst-diff)')).join('\n\n') || 'Geen verschillen';
-    inspectionViewed={project:report.project,head:report.head};merge.disabled=false;
+    inspectionViewed={project:report.project,head:report.head,baseSha:result.base_commit.sha};merge.disabled=false;
   }));
   merge.addEventListener('click',()=>inspectionAction(async()=>{
     if(inspectionViewed?.head!==report.head || inspectionViewed.project!==report.project)throw new Error('Bekijk eerst de diff.');
     const ref=await githubRequest('repos/'+report.repo+'/git/ref/heads/'+encodeRepoPath(report.branch));
     if(ref.object.sha!==report.head)throw new Error('Branch gewijzigd; opnieuw bekijken.');
+    const base=await githubRequest('repos/'+report.repo+'/git/ref/heads/main');
+    if(base.object.sha!==inspectionViewed.baseSha)throw new Error('Main gewijzigd; bekijk de diff opnieuw.');
     if(!confirm('Alle gevalideerde fixes van '+report.project+' mergen naar main?'))return;
     await githubRequest('repos/'+report.repo+'/merges','POST',{base:'main',head:report.head,commit_message:'Merge validated DELPHI watchdog fixes'});
     await apiFetch('/api/inspections/'+encodeURIComponent(report.project),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'merged',head:report.head})});
