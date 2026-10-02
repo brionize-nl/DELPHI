@@ -74,6 +74,12 @@ class WatchdogTests(unittest.TestCase):
             file.write_text('<html><script>const x = 1;</script></html>')
             w.validate_file(file)
 
+    def test_browser_modules_are_not_false_syntax_bugs(self):
+        w.validate_javascript('export const answer = 42;', 'node')
+        w.validate_javascript('var await = 42;', 'node')
+        with self.assertRaises(Exception):
+            w.validate_javascript('export const answer = ;', 'node')
+
     def test_model_echo_wrong_evidence_and_ambiguous_edits_rejected(self):
         source = 'const value = 1;\nconsole.log(vaule);\n'
         issue = {'line':2,'message':'De verkeerd gespelde variabele veroorzaakt een ReferenceError.','evidence':'console.log(vaule);'}
@@ -83,6 +89,9 @@ class WatchdogTests(unittest.TestCase):
             {'issues':[{'line':1,'message':'uitleg','evidence':'const value = 1;'}],'edits':[]},
             {'issues':[{**issue,'evidence':'console.log(missing);'}],'edits':[]},
             {'issues':[{**issue,'line':99}],'edits':[]},
+            {'issues':[issue,issue],'edits':[]},
+            {'issues':[{**issue,'message':'x'*301}],'edits':[]},
+            {'issues':[issue],'edits':[{'old':'console.log(vaule);','new':'x'*501}]},
             {'issues':[issue],'edits':[{'old':'not in source','new':'replacement'}]},
             {'issues':[],'edits':[{'old':'const value = 1;','new':'const value = 2;'}]},
             {'issues':[issue],'edits':[{'old':'const value = 1;','new':'const value = 2;'}]}
