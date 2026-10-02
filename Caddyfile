@@ -45,6 +45,16 @@ ollama.brionize.nl {
 			}
 		}
 
+		handle /api/gemini/* {
+			uri strip_prefix /api/gemini
+			reverse_proxy https://generativelanguage.googleapis.com {
+				header_up x-goog-api-key __GEMINI_API_KEY__
+				header_up Host generativelanguage.googleapis.com
+				header_up -X-API-Key
+				flush_interval -1
+			}
+		}
+
 		handle /api/mistral/* {
 			uri strip_prefix /api/mistral
 			reverse_proxy https://api.mistral.ai {

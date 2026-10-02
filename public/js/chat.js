@@ -95,6 +95,12 @@ const PROVIDERS = {
     parseModels: data => (data.data || []).filter(m => m.id.startsWith('gpt-')).map(m => m.id).sort(),
     buildBody: (model, messages, temperature) => ({model, messages, stream: true, temperature}), parseStream: 'openai'
   },
+  gemini: {
+    name: 'Gemini', chatPath: '/api/gemini/v1beta/chat/completions', modelsPath: '/api/gemini/v1beta/models',
+    parseModels: data => (data.data || []).filter(m => m.id.startsWith('gemini-')).map(m => m.id).sort(),
+    defaultModels: ['gemini-2.0-flash', 'gemini-2.5-flash-preview-05-20'],
+    buildBody: (model, messages, temperature) => ({model, messages, stream: true, temperature}), parseStream: 'openai'
+  },
   mistral: {
     name: 'Mistral', chatPath: '/api/mistral/v1/chat/completions', modelsPath: '/api/mistral/v1/models',
     parseModels: data => (data.data || []).map(m => m.id).sort(),
