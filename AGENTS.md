@@ -78,6 +78,18 @@ Op de VPS: `cd ~/DELPHI && git pull && sudo bash setup.sh`
 Cache naam: `delphi-pwa-vN` — **versie bumpen bij ELKE content-wijziging**.
 Zonder bump krijgen gebruikers de oude gecachte versie.
 
+## Afstuderen
+Wanneer een feature volwassen en werkend is, krijgt die een eigen repo — volledig los van DELPHI.
+DELPHI is de werkplaats, niet het eindproduct. Voorbeelden:
+- Watchdog → `brionize-nl/watchdog`
+- Ketentaken-engine → eigen repo
+- DELPHI zelf blijft de cockpit die alles aanstuurt
+
+Criteria voor afstuderen:
+1. Feature is volledig werkend en getest
+2. Feature kan onafhankelijk draaien zonder de rest van DELPHI
+3. Eigenaar beslist wanneer het zover is
+
 ## Niet doen
 - Geen Node.js, npm, build tools
 - Geen externe JS libraries (tenzij absoluut noodzakelijk, dan CDN)
