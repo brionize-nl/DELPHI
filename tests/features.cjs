@@ -94,7 +94,24 @@ const server=http.createServer(async(req,res)=>{
    await drop('unreadable.txt','text/plain','text');await page.waitForFunction(()=>document.querySelector('#input-hint').textContent.includes('niet worden gelezen'));await page.evaluate(()=>window.FileReader=window.originalReader);
    tested++;
   }
+  if(await page.locator('#btn-compare').count()) {
+   await page.click('#btn-compare');await page.waitForFunction(()=>!document.querySelector('#btn-compare-run').disabled);
+   await page.fill('#compare-prompt','Dezelfde vraag');await page.selectOption('#compare-model-right','alpha');const count=bodies.length;
+   await page.click('#btn-compare-run');assert.match(await page.locator('#compare-status').innerText(),/verschillende/);assert.equal(bodies.length,count);await page.selectOption('#compare-model-right','beta');
+   await page.click('#btn-compare-run');await page.waitForFunction(()=>!compareController && document.querySelector('#compare-status').textContent==='Vergelijking voltooid.');
+   assert.ok(maxParallel>=2);assert.deepEqual(bodies.at(-1).messages,bodies.at(-2).messages);assert.equal(bodies.at(-1).messages.at(-1).content,'Dezelfde vraag');
+   assert.match(await page.locator('#compare-output-left').innerText(),/alpha/);assert.match(await page.locator('#compare-output-right').innerText(),/beta/);assert.equal(await page.locator('#compare-modal img').count(),0);
+   await page.fill('#compare-prompt','één fout');await page.click('#btn-compare-run');await page.waitForFunction(()=>!compareController && document.querySelector('#compare-status').textContent.includes('status per model'));
+   assert.equal(await page.locator('#compare-status-left').innerText(),'Klaar');assert.notEqual(await page.locator('#compare-status-right').innerText(),'Klaar');assert.match(await page.locator('#compare-output-left').innerText(),/alpha/);
+   await page.fill('#compare-prompt','langzaam');await page.click('#btn-compare-run');await page.waitForFunction(()=>document.querySelector('#compare-output-left').textContent.includes('Antwoord') && document.querySelector('#compare-output-right').textContent.includes('Antwoord'));
+   await page.click('#btn-compare-stop');await page.waitForFunction(()=>!compareController);assert.equal(await page.locator('#compare-status').innerText(),'Vergelijking gestopt.');assert.equal(aborted,2);
+   await page.fill('#compare-prompt','langzaam');await page.click('#btn-compare-run');await page.waitForFunction(()=>compareController!==null);await page.keyboard.press('Escape');await page.waitForFunction(()=>!compareController);assert.equal(await page.locator('#compare-modal.open').count(),0);
+   await page.setViewportSize({width:375,height:812});await page.click('#btn-compare');await page.waitForFunction(()=>!document.querySelector('#btn-compare-run').disabled);
+   const panels=await page.locator('.compare-panel').all();const first=await panels[0].boundingBox(),second=await panels[1].boundingBox();assert.ok(second.y>first.y);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+   await page.click('#btn-compare-close');await page.setViewportSize({width:1280,height:720});tested++;
+  }
   // Later feature PRs extend this test on the same branch stack.
+  if(process.env.EXPECT_FEATURES)assert.equal(tested,Number(process.env.EXPECT_FEATURES));
   assert.deepEqual(errors,[]);
   const fallback=await browser.newContext({serviceWorkers:'block'});await fallback.addInitScript(()=>{localStorage.setItem('olla_apikey','test-key');Object.defineProperty(window,'SpeechRecognition',{value:undefined});Object.defineProperty(window,'webkitSpeechRecognition',{value:undefined});});
   const fallbackPage=await fallback.newPage();await fallbackPage.goto(url);assert.equal(await fallbackPage.locator('#btn-voice').isVisible(),false);await fallback.close();
