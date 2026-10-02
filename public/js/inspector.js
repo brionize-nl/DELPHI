@@ -14,7 +14,7 @@ async function refreshInspections() {
       const title=document.createElement('h3');title.textContent=report.project;
       const status=document.createElement('p');
       const labels={pending:'Fixes wachten op review',clean:'Geen nieuwe problemen gevonden',findings:'Bevindingen beschikbaar',error:'Scan mislukt','not-scanned':'Nog niet gescand',merged:'Gemerged',ignored:'Genegeerd','dry-run':'Testscan, geen branch gepubliceerd',scanning:'Scan bezig'};
-      status.textContent=(labels[report.status] || report.status)+' · '+report.fixes.length+' fixes';
+      status.textContent=(report.status==='clean' && !report.scanned?'Geen nieuwe geschikte bestanden onderzocht':(labels[report.status] || report.status))+' · '+report.fixes.length+' fixes';
       const time=document.createElement('small');
       time.textContent=report.finished?'Laatste scan: '+new Date(report.finished).toLocaleString('nl-NL')+' · volgende cronrun: rond '+new Date(report.next_scan).toLocaleString('nl-NL')+' · '+report.scanned+' bestanden gecontroleerd, '+report.skipped+' overgeslagen'+(report.partial?' · Deelrun: verdere bestanden volgen bij een volgende scan.':''):'';
       const view=document.createElement('button');view.textContent='Bekijk';view.addEventListener('click',()=>viewInspection(report));

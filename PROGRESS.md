@@ -45,10 +45,13 @@
 - Werkplaats schrijven volledig live getest via tijdelijke branches en QA-PR #4: UTF-8 create/update, conflicten, cachebump, echte vergelijking, PR, merge en opruimen; main bleef ongewijzigd.
 - Watchdog model-hallucinatie aangetoond op correct JavaScript; automatische publicatie nu beperkt tot onafhankelijk bewezen syntaxreparaties. Logische AI-voorstellen blijven expliciet onbewezen en handmatig te beoordelen. Geheim/configbestanden uitgesloten, schema-echo en verkeerd bronbewijs afgewezen.
 
-- Cache v12 live; Caddy/Ollama/JSON-API actief. Nieuwe rollbackbackup: `/opt/delphi/backups/20261002T165126Z/`.
+- Cache v13 live; Caddy/Ollama/JSON-API actief. Nieuwe rollbackbackup: `/opt/delphi/backups/20261002T165126Z/`.
 - De Python-tests slagen lokaal én op Oracle ARM64. Browserregressie geslaagd; echte live chatstream, VPS-autosave, GitHub-lezen en 3 Ollama-ketenstappen geslaagd na de uitrol. Geen JavaScript-fouten.
 - Alle geconfigureerde projectcontextbestanden zijn met de echte GitHub-API gecontroleerd en bereikbaar. QA-PR #4 is gemerged in een tijdelijke testbranch; beide testbranches zijn verwijderd.
 
 - Watchdog-antwoorden begrensd tot één korte bevinding/edit per bestand, maximaal 1000 uitvoertokens. Browser-ES-modules mogen niet ten onrechte als syntaxfout worden behandeld; klassieke én module-grammatica worden gecontroleerd.
 
 - Bronregels zijn genummerd voor modelreferentie; foutmeldingen onderscheiden afgewezen modelbewijs van transportproblemen. Onbruikbare antwoorden krijgen geen commit en blijven herprobeerbaar.
+
+- Nieuwe v5-smoketest voor alle vier repositories afgerond (`--max-files 1 --max-bytes 4000`). DELPHI/Brionicle: onbewezen AI-voorstellen, niet gecommit; sysdash: geen nieuw geschikt bestand binnen deze kleine testlimiet; brionize-ai-framework: ambigue edit correct afgewezen en herprobeerbaar. Geen fixes-branches gepubliceerd. Normale cronlimiet blijft 20 KB/30 bestanden/45 minuten per project. Dit is geen volledige audit.
+- Nul onderzochte bestanden wordt in de UI expliciet als zodanig benoemd.
