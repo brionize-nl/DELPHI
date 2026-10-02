@@ -112,7 +112,7 @@ const server = http.createServer((req, res) => {
     await page.fill('#editor-pr-title','Test PR');await page.click('#btn-editor-pr');await page.waitForFunction(()=>document.querySelector('#editor-status').textContent.startsWith('PR aangemaakt'));
     await page.click('[data-tab="launchpad"]');
     await page.fill('#lp-add-name', 'Mijn link'); await page.fill('#lp-add-url', 'example.com'); await page.click('#btn-lp-add');
-    assert.equal(await page.locator('#lp-custom-grid a').getAttribute('href'), 'https://example.com');
+    assert.equal(await page.locator('#lp-custom-grid a').getAttribute('href'), 'https://example.com/');
     await page.click('#lp-custom-grid button');
     assert.equal(await page.locator('#lp-custom-grid a').count(), 0);
     await page.click('[data-tab="chains"]');await page.click('#btn-chain-models');await page.waitForFunction(()=>document.querySelector('#chain-model').options.length>0);

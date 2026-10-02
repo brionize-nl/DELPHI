@@ -1162,3 +1162,16 @@ button:disabled { opacity: .5; cursor: default; }
 .notification-tools { display: grid; gap: 8px; padding: 10px 0; }
 .notification-tools label { display: flex; gap: 6px; align-items: center; }
 .notification-tools input[type=checkbox] { width: auto; }
+
+/* Chat tools: actions remain reachable on touch and keyboard. */
+.conv-title { background:none; border:0; text-align:left; cursor:pointer; flex:1; min-width:0; padding:0; font:inherit; }
+.conv-title small { display:block; font-size:10px; opacity:.8; overflow:hidden; text-overflow:ellipsis; }
+.conv-actions { display:flex; flex-shrink:0; }
+mark { background:var(--accent-dim); color:var(--text); border-radius:2px; }
+.history-empty { padding:20px; text-align:center; color:var(--text-muted); font-size:13px; }
+.voice-btn { align-self:flex-end; padding:12px; border:1px solid var(--border); border-radius:12px; background:var(--bg-input); color:var(--text); cursor:pointer; }
+.voice-btn[hidden] { display:none; }
+.voice-btn[aria-pressed="true"] { border-color:var(--accent); background:var(--accent-dim); }
+#voice-status { display:block; color:var(--text-muted); min-height:1em; }
+
+#voice-status:empty { display:none; }
