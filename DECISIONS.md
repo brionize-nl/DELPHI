@@ -56,3 +56,11 @@ Alle besluiten die tijdens het sparren genomen zijn. Elke AI leest dit eerst.
 ## Backlog (geparkeerd)
 
 _Nog geen geparkeerde items._
+
+## 2026-10-02 — Resterende blueprint-fasen uitvoeren
+
+**Besluit:** Eigenaar geeft Codex toestemming om fases 2–7 achtereenvolgens te bouwen, te testen en op GitHub klaar te zetten.
+**Reden:** De volledige persoonlijke cockpit afronden.
+**Aanpak:** Python standaardbibliotheek voor JSON-opslag en watchdog; vanilla JS voor alle UI. Geen diensten of afhankelijkheden met kosten. Bestaande functies behouden, per fase testen, eigen branch en pull request. VPS-uitrol zodra de SSH-verbinding beschikbaar is. Features blijven voorlopig in DELPHI; afstuderen is een afzonderlijk eigenaarsbesluit.
+**Impact:** Nieuwe server routes, systemd service en cronjob; bestaande proxy-auth en provider routes blijven behouden. Watchdog mag uitsluitend bestaande bronbestanden verbeteren op een aparte fixes-branch en nooit zelf mergen.
+**Prioriteit/scope:** Eerst servergeschiedenis, daarna projectcontext, schrijfacties, ketens, meldingen en watchdog.

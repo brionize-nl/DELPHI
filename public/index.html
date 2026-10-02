@@ -26,6 +26,7 @@
   <div class="sidebar-search">
     <input type="text" id="conv-search" placeholder="Zoeken...">
   </div>
+  <div class="history-tools"><button id="btn-history-sync" type="button">Ververs geschiedenis</button><small id="history-status" role="status">Lokaal bewaard</small></div>
   <div class="conv-list" id="conv-list"></div>
 
   <div class="sidebar-section">
@@ -125,10 +126,13 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Launchpad
     </button>
+    <button class="tab-btn" data-tab="chains">Ketentaken</button>
+    <button class="tab-btn" data-tab="inspector">Inspectie</button>
   </div>
 
   <!-- Chat view -->
   <div class="view" id="view-chat">
+  <div class="project-tools"><select id="project-select" aria-label="Project"><option value="">Geen project</option></select><button id="btn-project-context" type="button">Laad repo-context</button><small id="project-status" role="status"></small></div>
   <div class="chat" id="chat">
     <div class="welcome" id="welcome">
       <img src="/icon-192.svg" alt="" width="64" height="64" style="opacity:0.8">
@@ -180,6 +184,19 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
         </button>
       </div>
+
+      <details class="workspace-editor" id="editor-tools">
+        <summary>Code bewerken · branches · pull requests</summary>
+        <div class="form-row"><label>Repository <select id="editor-repo"><option>brionize-nl/DELPHI</option><option>brionize-nl/Brionicle</option><option>brionize-nl/sysdash</option><option>brionize-nl/brionize-ai-framework</option></select></label><button id="btn-editor-repo">Laad branches</button><label>Branch <select id="editor-branch"></select></label></div>
+        <div class="form-row"><label>Nieuwe branch <input id="editor-new-branch" placeholder="delphi/mijn-wijziging"></label><button id="btn-editor-branch">Branch maken</button><button id="btn-editor-compare">Vergelijk met hoofdbranch</button><button id="btn-editor-merge">Merge</button><button id="btn-editor-delete">Verwijder branch</button></div>
+        <div class="form-row"><label>Bestandspad <input id="editor-path" list="editor-file-list" placeholder="public/js/chat.js"></label><datalist id="editor-file-list"></datalist><button id="btn-editor-files">Bestandslijst</button><button id="btn-editor-read">Lees bestand</button><label><input type="checkbox" id="editor-create"> Nieuw bestand</label></div>
+        <label>Code <textarea id="editor-code" spellcheck="false" rows="12"></textarea></label>
+        <details><summary>Broncode met regelnummers</summary><pre id="editor-preview" class="source-preview"></pre></details>
+        <div class="form-row"><label>Commitbericht <input id="editor-message" placeholder="Beschrijf de wijziging"></label><button id="btn-editor-commit">Commit op werkbranch</button></div>
+        <details><summary>Ollama-voorstel</summary><label>Opdracht <input id="editor-ai-instruction" placeholder="Welke bug moet opgelost worden?"></label><button id="btn-editor-ai">Ollama, fix dit</button><pre id="editor-ai-proposal"></pre><button id="btn-editor-accept">Voorstel overnemen in editor</button></details>
+        <details><summary>Pull request openen</summary><label>Titel <input id="editor-pr-title"></label><label>Beschrijving <textarea id="editor-pr-body" rows="3"></textarea></label><button id="btn-editor-pr">Open pull request</button></details>
+        <pre id="editor-diff" aria-label="Branchverschillen"></pre><p id="editor-status" role="status">Laad de branches om te beginnen.</p>
+      </details>
       <div id="wp-content">
         <div class="gh-empty">Laden...</div>
       </div>
@@ -187,6 +204,20 @@
   </div>
 
   <!-- Launchpad view -->
+
+
+  <div class="view hidden" id="view-inspector"><div class="task-panel">
+    <h2>Ollama Watchdog Inspectie</h2><p>De VPS scant elke vier uur. Rapporten worden hier op aanvraag geladen. Fixes komen op aparte branches; jij beslist over mergen.</p>
+    <button id="btn-inspection-refresh">Ververs inspecties</button><p id="inspection-status" role="status">Nog niet geladen.</p><div id="inspection-projects"></div><div id="inspection-detail"></div>
+  </div></div>
+  <div class="view hidden" id="view-chains"><div class="task-panel">
+    <h2>Ketentaken met Ollama</h2><p>Elke stap gebruikt de uitvoer van de vorige stap. Het geselecteerde chatproject gaat mee als context.</p>
+    <div class="form-row"><label>Keten <select id="chain-template"><option value="review">Code Review</option><option value="fix">Bug Fix</option><option value="docs">Documentatie</option><option value="refactor">Refactor</option><option value="custom">Eigen keten</option></select></label><label>Ollama-model <select id="chain-model"></select></label><button id="btn-chain-models">Laad modellen</button></div>
+    <details><summary>Keten aanpassen</summary><p>Presets: coder, analyst, schrijver, sysadmin, assistent, creatief, uitleg. Gebruik {{input}} in elke prompt.</p><textarea id="chain-definition" rows="12" spellcheck="false" aria-label="Keten JSON"></textarea><button id="btn-chain-save">Bewaar als eigen keten</button></details>
+    <label>Input <textarea id="chain-input" rows="8" placeholder="Code, foutmelding of tekst"></textarea></label>
+    <div class="form-row"><button id="btn-chain-run">Start keten</button><button id="btn-chain-stop" disabled>Stop</button><button id="btn-chain-copy" disabled>Kopieer eindresultaat</button><button id="btn-chain-editor" disabled>Naar Werkplaats-editor</button></div>
+    <p id="chain-status" role="status">Laad een Ollama-model.</p><div id="chain-steps"></div>
+  </div></div>
   <div class="view hidden" id="view-launchpad">
     <div class="launchpad-view">
 
@@ -281,6 +312,7 @@
       <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7" style="padding:0">
       <div class="field-hint">Huidig: <span id="temp-display">0.7</span> — lager = preciezer, hoger = creatiever</div>
     </div>
+    <div class="field notification-tools"><label><input type="checkbox" id="notifications-enabled"> Meldingen bij voltooide taken</label><button id="btn-notifications" type="button">Meldingen toestaan</button><small id="notification-status" role="status"></small></div>
     <div class="modal-actions">
       <button class="btn btn-danger" id="btn-clear-all">Wis alles</button>
       <button class="btn btn-ghost" id="btn-cancel">Annuleer</button>
@@ -305,7 +337,13 @@
 
 <script src="/js/app.js"></script>
 <script src="/js/chat.js"></script>
+<script src="/js/history.js"></script>
+<script src="/js/projects.js"></script>
 <script src="/js/werkplaats.js"></script>
+<script src="/js/editor.js"></script>
+<script src="/js/chains.js"></script>
+<script src="/js/notify.js"></script>
+<script src="/js/inspector.js"></script>
 <script src="/js/launchpad.js"></script>
 </body>
 </html>

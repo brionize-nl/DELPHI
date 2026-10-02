@@ -59,6 +59,7 @@ function loadConversations() {
 
 function saveConversations() {
   try { localStorage.setItem('olla_convs', JSON.stringify(conversations)); } catch {}
+  queueHistory();
 }
 
 function genId() {
@@ -187,9 +188,11 @@ function initPresets() {
 
 presetSelect.addEventListener('change', () => {
   setSetting('preset', presetSelect.value);
+  const conv = conversations[activeConvId];
+  if (conv) { conv.preset = presetSelect.value; conv.updated = Date.now(); saveConversations(); }
 });
 
-function getActiveSystemPrompt() {
+function presetSystemPrompt() {
   const presetId = presetSelect.value;
   if (presetId) {
     const preset = PRESETS.find(p => p.id === presetId);
@@ -197,6 +200,8 @@ function getActiveSystemPrompt() {
   }
   return getSetting('system', '');
 }
+
+function getActiveSystemPrompt() { return [projectSystemPrompt(), presetSystemPrompt()].filter(Boolean).join('\n\n'); }
 
 function getActiveTemperature() {
   const presetId = presetSelect.value;
@@ -212,7 +217,7 @@ function renderConvList(filter = '') {
   convList.innerHTML = '';
   const sorted = Object.values(conversations).sort((a, b) => b.updated - a.updated);
   const needle = filter.toLowerCase();
-  const filtered = needle ? sorted.filter(c => c.title.toLowerCase().includes(needle)) : sorted;
+  const filtered = needle ? sorted.filter(c => (c.title + ' ' + c.messages.map(m => m.content).join(' ')).toLowerCase().includes(needle)) : sorted;
 
   let lastGroup = '';
   filtered.forEach(conv => {
@@ -272,6 +277,8 @@ function switchConv(id) {
   const conv = conversations[id];
   if (!conv) return;
 
+  $('#project-select').value = conv.project || '';
+  presetSelect.value = conv.preset || '';
   convNameEl.textContent = conv.title;
   chat.querySelectorAll('.msg').forEach(m => m.remove());
   welcome.style.display = conv.messages.length ? 'none' : '';
@@ -286,7 +293,7 @@ function newConv() {
   const id = genId();
   conversations[id] = {
     id, title: 'Nieuw gesprek', messages: [],
-    created: Date.now(), updated: Date.now(), provider: providerSelect.value, model: modelSelect.value
+    created: Date.now(), updated: Date.now(), project: $('#project-select').value, preset: presetSelect.value, provider: providerSelect.value, model: modelSelect.value
   };
   saveConversations();
   switchConv(id);
@@ -298,6 +305,7 @@ function deleteConv(id) {
   const conv = conversations[id];
   if (!conv) return;
   if (!confirm(`"${conv.title}" verwijderen?`)) return;
+  removeHistory(id);
   delete conversations[id];
   saveConversations();
   if (activeConvId === id) {
@@ -325,6 +333,7 @@ $('#btn-rename-save').addEventListener('click', () => {
     const val = $('#rename-input').value.trim();
     if (val) {
       conversations[renameId].title = val;
+      conversations[renameId].updated = Date.now();
       saveConversations();
       if (renameId === activeConvId) convNameEl.textContent = val;
       renderConvList($('#conv-search').value);
@@ -355,10 +364,10 @@ $('#btn-new-conv').addEventListener('click', newConv);
 
 // ── Markdown ──
 function renderMd(text) {
-  let html = text;
+  let html = escapeHtml(text);
 
   html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
-    const escaped = escapeHtml(code.trimEnd());
+    const escaped = code.trimEnd();
     const langLabel = lang || 'code';
     return `<pre><div class="code-header"><span class="code-lang">${langLabel}</span><button class="copy-btn" onclick="copyCode(this)">kopieer</button></div><code>${escaped}</code></pre>`;
   });
@@ -376,7 +385,7 @@ function renderMd(text) {
 
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+  html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
   html = html.replace(/^[*-] (.+)$/gm, '<li>$1</li>');
   html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
   html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
@@ -384,7 +393,13 @@ function renderMd(text) {
   html = html.replace(/^## (.+)$/gm, '<strong>$1</strong>');
   html = html.replace(/^# (.+)$/gm, '<strong>$1</strong>');
   html = html.replace(/^---$/gm, '<hr>');
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, target) => {
+    try {
+      const url = new URL(target.replace(/&amp;/g, '&'), location.origin);
+      if (!['http:', 'https:', 'mailto:'].includes(url.protocol)) return label;
+      return '<a href="' + escapeHtml(url.href) + '" target="_blank" rel="noopener">' + label + '</a>';
+    } catch { return label; }
+  });
   html = html.replace(/\n\n/g, '</p><p>');
   html = html.replace(/\n/g, '<br>');
   if (!html.startsWith('<')) html = '<p>' + html + '</p>';
@@ -432,6 +447,7 @@ async function send(text) {
   const providerId = providerSelect.value;
   const provider = activeProvider();
   const selectedModel = modelSelect.value;
+  const started = Date.now();
   text = text.trim();
 
   if (!activeConvId) newConv();
@@ -451,6 +467,8 @@ async function send(text) {
   conv.updated = Date.now();
   conv.model = selectedModel;
   conv.provider = providerId;
+  conv.project = $('#project-select').value;
+  conv.preset = presetSelect.value;
   renderConvList($('#conv-search').value);
   saveConversations();
 
@@ -501,6 +519,7 @@ async function send(text) {
       conv.messages.push({ role: 'assistant', content: fullResponse, provider: providerId, model: selectedModel });
       conv.updated = Date.now();
       saveConversations();
+      notifyCompletion('Antwoord klaar', conv.title, Date.now() - started);
     }
   } catch (e) {
     aiDiv.remove();
@@ -613,10 +632,12 @@ $('#btn-save').addEventListener('click', () => {
   setSetting('temperature', $('#temperature').value);
   $('#settings-modal').classList.remove('open');
   loadModels();
+  syncHistory();
 });
 
 $('#btn-clear-all').addEventListener('click', () => {
   if (!confirm('ALLE gesprekken en instellingen wissen?')) return;
+  Object.keys(conversations).forEach(removeHistory);
   conversations = {};
   saveConversations();
   activeConvId = null;

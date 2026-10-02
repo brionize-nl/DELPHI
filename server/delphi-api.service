@@ -1,0 +1,18 @@
+[Unit]
+Description=DELPHI JSON storage API
+After=network.target
+
+[Service]
+User=delphi
+Group=delphi
+ExecStart=/usr/bin/python3 /opt/delphi/server/api.py
+Restart=on-failure
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/data/chats /data/watchdog
+
+[Install]
+WantedBy=multi-user.target
