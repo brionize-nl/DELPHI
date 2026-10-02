@@ -10,11 +10,11 @@ ollama.brionize.nl {
 	# Preserve auth-before-proxy order; Caddy otherwise sorts handle before respond.
 	route {
 		respond @api_no_key "Ongeautoriseerd" 401
-	
+
 		handle @delphi_storage {
 			reverse_proxy localhost:3001
 		}
-	
+
 		handle /api/ollama/* {
 			uri strip_prefix /api/ollama
 			reverse_proxy localhost:11434 {
@@ -24,7 +24,7 @@ ollama.brionize.nl {
 				flush_interval -1
 			}
 		}
-	
+
 		handle /api/claude/* {
 			uri strip_prefix /api/claude
 			reverse_proxy https://api.anthropic.com {
@@ -34,7 +34,7 @@ ollama.brionize.nl {
 				flush_interval -1
 			}
 		}
-	
+
 		handle /api/openai/* {
 			uri strip_prefix /api/openai
 			reverse_proxy https://api.openai.com {
@@ -44,7 +44,7 @@ ollama.brionize.nl {
 				flush_interval -1
 			}
 		}
-	
+
 		handle /api/mistral/* {
 			uri strip_prefix /api/mistral
 			reverse_proxy https://api.mistral.ai {
@@ -54,7 +54,7 @@ ollama.brionize.nl {
 				flush_interval -1
 			}
 		}
-	
+
 		handle /api/github/* {
 			uri strip_prefix /api/github
 			reverse_proxy https://api.github.com {
@@ -65,11 +65,11 @@ ollama.brionize.nl {
 				flush_interval -1
 			}
 		}
-	
+
 		handle /api/* {
 			respond "Route niet gevonden" 404
 		}
-	
+
 		handle {
 			root * /opt/ollama-pwa/public
 			try_files {path} /index.html
