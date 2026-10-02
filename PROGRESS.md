@@ -5,12 +5,12 @@
 | Fase | Omschrijving | Status | Door wie |
 |------|-------------|--------|----------|
 | 1 | Modulair opsplitsen | ✅ Klaar | Codex |
-| 2 | Chat-geheugen | ✅ Gebouwd en lokaal getest; uitrol wacht | Codex |
-| 3 | Project-contexten | ✅ Gebouwd en lokaal getest; uitrol wacht | Codex |
-| 4 | Werkplaats schrijven | ✅ Gebouwd en lokaal getest; uitrol wacht | Codex |
-| 5 | Ketentaken | ✅ Gebouwd en lokaal getest; uitrol wacht | Codex |
-| 6 | Notificaties | ✅ Gebouwd en lokaal getest; uitrol wacht | Codex |
-| 7 | Watchdog | ✅ Gebouwd en lokaal getest; uitrol wacht | Codex |
+| 2 | Chat-geheugen | ✅ Live op VPS; getest | Codex |
+| 3 | Project-contexten | ✅ Live op VPS; getest | Codex |
+| 4 | Werkplaats schrijven | ✅ Live op VPS; getest | Codex |
+| 5 | Ketentaken | ✅ Live op VPS; getest | Codex |
+| 6 | Notificaties | ✅ Live op VPS; getest | Codex |
+| 7 | Watchdog | ✅ Live op VPS; getest | Codex |
 
 ## Regels voor dit bestand
 - Voordat je aan een fase begint: zet status op 🔧 en je naam erbij
@@ -23,3 +23,17 @@
 - Python HTTP/Git integratietests, volledige browser-QA, mobiele layout, offline-cache en Caddy-configvalidatie geslaagd.
 - GitHub/Ollama/browsermeldingen gebruikt als fixtures in browser-QA; echte VPS-integratie volgt bij uitrol.
 - Meldingen zijn lokale browser/PWA-meldingen, geen push naar een gesloten app.
+
+## Oplevering 2026-10-02
+
+- PR #2 gemerged: https://github.com/brionize-nl/DELPHI/pull/2
+- Productie: https://ollama.brionize.nl — cache `delphi-pwa-v11`.
+- Live gecontroleerd: alle publieke assets, auth (401 zonder sleutel), JSON opslag/ophalen/verwijderen, Caddy GitHub-proxy en toegang tot alle vier repositories.
+- Live headless browser: echte Ollama-chatstream met `llama3.2:latest`, VPS autosave, GitHub branches en bronbestand, drie echte ketenstappen en de vier inspectieprojecten; geen JS-fouten. Testchats verwijderd.
+- Zes Python HTTP/Git-tests ook op de Oracle ARM64 VPS geslaagd.
+- Services `caddy`, `ollama`, `delphi-api` en `cron` actief. Watchdog cron: iedere vier uur. Standaardmodel: reeds geïnstalleerde `llama3.1:8b`.
+- Eerste beperkte watchdog-scans voor alle vier projecten geslaagd (`--max-files 1 --max-bytes 5000 --model llama3.2:latest`). Rapporten bevatten bevindingen; geen fixes gepubliceerd. Dit is een smoke test, geen volledige audit van alle bestanden.
+- Bestaande VPS-sleutel had geen toegang tot de privé-repo `brionize-ai-framework`; de bestaande brionize-nl GitHub-aanmelding is versleuteld over SSH in de beveiligde server-keyfiles gezet. Geen tokens in repo/logs. Vorige sleutel bewaard als root-only backup.
+- Werkplaats-schrijf-/merge- en watchdog-fixpaden zijn met gecontroleerde fixtures/lokale Git-repositories getest; de live smoketest heeft geen echte projectcode aangepast.
+- Browsermeldingen zijn gebouwd en dispatch is getest. OS-levering/permission op telefoon vereist de eigen browserinstelling; gesloten-app push valt buiten deze implementatie zonder pushdienst.
+- Rollbackbackup: `/opt/delphi/backups/20261002T162610Z/`. Credentialbackup: `/opt/delphi/backups/credentials-20261002/`.

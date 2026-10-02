@@ -64,3 +64,9 @@ _Nog geen geparkeerde items._
 **Aanpak:** Python standaardbibliotheek voor JSON-opslag en watchdog; vanilla JS voor alle UI. Geen diensten of afhankelijkheden met kosten. Bestaande functies behouden, per fase testen, eigen branch en pull request. VPS-uitrol zodra de SSH-verbinding beschikbaar is. Features blijven voorlopig in DELPHI; afstuderen is een afzonderlijk eigenaarsbesluit.
 **Impact:** Nieuwe server routes, systemd service en cronjob; bestaande proxy-auth en provider routes blijven behouden. Watchdog mag uitsluitend bestaande bronbestanden verbeteren op een aparte fixes-branch en nooit zelf mergen.
 **Prioriteit/scope:** Eerst servergeschiedenis, daarna projectcontext, schrijfacties, ketens, meldingen en watchdog.
+
+## 2026-10-02 — Productie-uitrol en privé-repositorytoegang
+
+**Uitvoering binnen eigenaarsopdracht:** Alle blueprint-fasen op GitHub gemerged en op de bestaande `n8n-vm` uitgerold. De bestaande GitHub-aanmelding van brionize-nl vervangt op de VPS de repo-beperkte sleutel die `brionize-ai-framework` niet kon bereiken. Sleutels blijven in root-managed keyfiles en zijn niet in de repository opgenomen. De vorige configuratie/sleutel zijn root-only gebackupt.
+**Modelkeuze:** Bestaande Ollama-modellen hergebruiken; `llama3.1:8b` voor de cronjob. Geen extra download of betaalde dienst.
+**Notificaties:** Lokale browser/PWA-meldingen met toestemming na een klik; geen gesloten-app pushdienst. Watchdog-rapporten worden op aanvraag geladen, zonder continue polling.
