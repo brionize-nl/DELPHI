@@ -68,6 +68,15 @@ const server=http.createServer(async(req,res)=>{
   await page.clock.resume();await page.fill('#conv-search','');await page.waitForTimeout(350);
   await page.selectOption('#provider-select','gemini');await page.waitForFunction(()=>modelSelect.value==='gemini-test');assert.equal(await page.evaluate(()=>PROVIDERS.gemini.chatPath),'/api/gemini/v1beta/openai/chat/completions');await page.selectOption('#provider-select','ollama');await page.waitForFunction(()=>modelSelect.value==='alpha');
   await page.evaluate(()=>{saveCustomLinks([{name:'malicious',url:'javascript:alert(1)'},{name:'Mail',url:'mailto:test@example.com'}]);renderCustomLinks();});assert.equal(await page.locator('#lp-custom-grid a').count(),1);
+  if(await page.locator('#view-dashboard').count()) {
+   await page.click('[data-tab="dashboard"]');await page.waitForFunction(()=>!dashboardBusy && document.querySelector('#dashboard-status').textContent==='Dashboard bijgewerkt.');
+   assert.equal(await page.locator('#dashboard-commits li').count(),5);assert.equal(await page.locator('#dashboard-models li').count(),2);assert.equal(await page.locator('#dashboard-inspections li').count(),1);
+   assert.equal(await page.locator('#dashboard-commits script').count(),0);assert.ok(Number(await page.locator('#dashboard-count').innerText())>=3);
+   failModels=true;await page.click('#btn-dashboard-refresh');await page.waitForFunction(()=>!dashboardBusy && document.querySelector('#dashboard-status').textContent.includes('niet beschikbaar'));
+   assert.equal(await page.locator('#dashboard-commits li').count(),5);assert.equal(await page.locator('#dashboard-inspections li').count(),1);failModels=false;
+   await page.click('#btn-dashboard-refresh');await page.waitForFunction(()=>!dashboardBusy && document.querySelector('#dashboard-status').textContent==='Dashboard bijgewerkt.');
+   await page.keyboard.press('Control+1');await page.keyboard.press('Control+6');assert.equal(await page.evaluate(()=>activeTab),'dashboard');tested++;
+  }
   // Later feature PRs extend this test on the same branch stack.
   assert.deepEqual(errors,[]);
   const fallback=await browser.newContext({serviceWorkers:'block'});await fallback.addInitScript(()=>{localStorage.setItem('olla_apikey','test-key');Object.defineProperty(window,'SpeechRecognition',{value:undefined});Object.defineProperty(window,'webkitSpeechRecognition',{value:undefined});});

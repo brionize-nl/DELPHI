@@ -72,3 +72,5 @@ Dicteren start via de microfoonknop en vult alleen een concept in; Enter verstuu
 Ctrl/Cmd+Enter verstuurt, Ctrl/Cmd+N opent een gesprek, Ctrl/Cmd+1–5 wisselt tabs en Escape sluit modals. Zoeken doorzoekt titel en berichttekst met 300ms debounce en markeert letterlijke treffers. De downloadknop bij ieder gesprek exporteert UTF-8 Markdown; de bestaande algemene exportknop blijft beschikbaar.
 
 Gemini gebruikt de [officiële OpenAI-compatibiliteitsroute](https://ai.google.dev/gemini-api/docs/openai), met serverauthenticatie. Geen nieuwe sleutels of externe providerverzoeken voor deze features. Browser-QA: `DELPHI_PLAYWRIGHT=/pad/naar/playwright node tests/features.cjs`; bestaande regressie: `node tests/browser.cjs` met dezelfde variabele.
+
+Dashboard: zesde tab met aantallen, inspecties, vijf DELPHI-commits en lokale modellen. Laden bij openen/verversen; fouten in één gegevensbron laten de andere kaarten beschikbaar. Ctrl/Cmd+6 opent het dashboard.

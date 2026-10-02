@@ -67,3 +67,5 @@
 ## Feature-briefing 2026-10-02
 
 🔧 Codex: acht features; providers gemerged via PR #10. ✅ Chat-tools gebouwd/getest op `codex/chat-tools`: dicteren (mockresultaten/permission/fallback), sneltoetsen, UTF-8 Markdown-downloads per gesprek en full-text zoeken met 300ms debounce en veilige markering. Daarna vier afzonderlijke PR’s. Feature-merges door eigenaar.
+
+✅ Dashboard gebouwd/getest op `codex/dashboard` (na chat-tools): zesde tab, gespreksteller, inspecties, laatste 5 DELPHI-commits en lokale modellen; onafhankelijk afgehandelde API-fouten, alleen ophalen bij openen/verversen.

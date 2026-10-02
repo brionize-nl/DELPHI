@@ -40,7 +40,7 @@ async function ghFetch(path) {
 let activeTab = 'chat';
 const tabBar = $('#tab-bar');
 const chatControls = $('.header-controls');
-const TABS = ['chat', 'werkplaats', 'launchpad', 'chains', 'inspector'];
+const TABS = ['chat', 'werkplaats', 'launchpad', 'chains', 'inspector', 'dashboard'];
 
 function changeTab(tab) {
   if (!TABS.includes(tab)) return;
@@ -55,6 +55,7 @@ function changeTab(tab) {
   if (tab === 'werkplaats') loadWerkplaats();
   if (tab === 'inspector') refreshInspections();
   if (tab === 'launchpad') renderCustomLinks();
+  if (tab === 'dashboard' && typeof loadDashboard==='function') loadDashboard();
 }
 tabBar.addEventListener('click', e => {
   const btn = e.target.closest('.tab-btn');
