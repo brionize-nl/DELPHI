@@ -34,6 +34,10 @@ fi
 echo "PWA bestanden kopieren..."
 mkdir -p /opt/ollama-pwa/public
 cp -r "$SCRIPT_DIR/public/"* /opt/ollama-pwa/public/
+# Public assets contain no secrets and must be readable by the Caddy user.
+# umask 077 otherwise makes newly introduced module directories inaccessible.
+find /opt/ollama-pwa/public -type d -exec chmod 755 {} +
+find /opt/ollama-pwa/public -type f -exec chmod 644 {} +
 
 # 4. API key genereren of bestaande gebruiken
 KEY_FILE="/etc/caddy/ollama-api-key"
@@ -119,6 +123,9 @@ if command -v ufw &> /dev/null; then
     ufw allow 443/tcp
     ufw --force enable
 fi
+
+# DELPHI JSON API installeren
+bash "$SCRIPT_DIR/server/install.sh"
 
 # 8. Services herstarten
 echo "Services herstarten..."

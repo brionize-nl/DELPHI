@@ -1125,3 +1125,40 @@ select, button, input, textarea {
 }
 
 .lp-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.history-tools { padding: 8px 12px; display: grid; gap: 6px; }
+.history-tools button { background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 6px; cursor: pointer; }
+#history-status { color: var(--text-muted); overflow-wrap: anywhere; }
+
+.project-tools { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 16px; align-items: center; border-bottom: 1px solid var(--border); }
+.project-tools select, .project-tools button { color: var(--text); background: var(--bg-hover); border: 1px solid var(--border); border-radius: 6px; padding: 6px; }
+.project-tools small { color: var(--text-muted); }
+
+.workspace-editor { margin: 16px 0; padding: 12px; border: 1px solid var(--border); border-radius: 8px; }
+.workspace-editor summary { cursor: pointer; padding: 8px 0; }
+.workspace-editor label { display: grid; gap: 4px; flex: 1; min-width: 140px; }
+.workspace-editor input, .workspace-editor select, .workspace-editor textarea, .workspace-editor button { background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 8px; max-width: 100%; }
+.workspace-editor input[type=checkbox] { width: auto; }
+.workspace-editor textarea { width: 100%; resize: vertical; font-family: monospace; }
+.form-row { display: flex; flex-wrap: wrap; align-items: end; gap: 8px; margin: 10px 0; }
+.workspace-editor pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 480px; overflow: auto; padding: 10px; background: var(--bg); }
+.source-line { display: block; }
+.line-no { display: inline-block; width: 4em; user-select: none; color: var(--text-muted); }
+.source-keyword { color: var(--accent); }
+.source-comment { color: var(--text-muted); }
+.source-string { color: #89d185; }
+button:disabled { opacity: .5; cursor: default; }
+
+.task-panel { padding: 16px; overflow: auto; width: 100%; }
+.task-panel label { display: grid; gap: 6px; }
+.task-panel textarea { width: 100%; resize: vertical; font-family: monospace; }
+.task-panel input, .task-panel select, .task-panel textarea, .task-panel button { background: var(--bg-hover); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 8px; }
+.task-panel details { margin: 12px 0; }
+.task-panel pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.chain-step { border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin: 10px 0; }
+.tab-bar { overflow-x: auto; flex-shrink: 0; }
+.tab-btn { white-space: nowrap; }
+
+.notification-tools { display: grid; gap: 8px; padding: 10px 0; }
+.notification-tools label { display: flex; gap: 6px; align-items: center; }
+.notification-tools input[type=checkbox] { width: auto; }

@@ -40,7 +40,7 @@ async function ghFetch(path) {
 let activeTab = 'chat';
 const tabBar = $('#tab-bar');
 const chatControls = $('.header-controls');
-const TABS = ['chat', 'werkplaats', 'launchpad'];
+const TABS = ['chat', 'werkplaats', 'launchpad', 'chains', 'inspector'];
 
 tabBar.addEventListener('click', e => {
   const btn = e.target.closest('.tab-btn');
@@ -55,10 +55,11 @@ tabBar.addEventListener('click', e => {
   });
   chatControls.style.display = tab === 'chat' ? '' : 'none';
   if (tab === 'werkplaats') loadWerkplaats();
+  if (tab === 'inspector') refreshInspections();
   if (tab === 'launchpad') renderCustomLinks();
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
 // ── Keyboard shortcuts ──
 document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey) {
@@ -74,6 +75,7 @@ document.addEventListener('keydown', e => {
 loadConversations();
 initPresets();
 updateSendButton();
+await initProjects();
 
 if (Object.keys(conversations).length) {
   const saved = getSetting('active', '');
@@ -88,6 +90,7 @@ renderConvList();
 
 if (apiKey()) {
   loadModels();
+  syncHistory();
 } else {
   openSettings();
 }
@@ -112,3 +115,12 @@ if ('serviceWorker' in navigator) {
 promptEl.focus();
 
 });
+
+function encodeRepoPath(path) { return path.split('/').map(encodeURIComponent).join('/'); }
+function decodeBase64(content) { return new TextDecoder().decode(Uint8Array.from(atob(content.replace(/\s/g, '')), c => c.charCodeAt(0))); }
+function encodeBase64(content) {
+  const bytes = new TextEncoder().encode(content);
+  let binary = '';
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary);
+}

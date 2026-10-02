@@ -1,0 +1,5 @@
+[
+  {"id":"brionicle","name":"Brionicle","repo":"brionize-nl/Brionicle","description":"Interactieve wereldkaart met live cameras","system":"Je werkt aan Brionicle, een vanilla JS PWA met Leaflet. Geen frameworks. On-demand laden. Volg de repo-instructies.","files":["AGENTS.md","docs/blueprint.md"]},
+  {"id":"delphi","name":"DELPHI","repo":"brionize-nl/DELPHI","description":"AI Command Center PWA","system":"Je werkt aan DELPHI, een modulaire vanilla JS PWA op Oracle VPS met Ollama. Geen frameworks, build tools, database of betaalde diensten.","files":["AGENTS.md","DELPHI-BLUEPRINT.md"]},
+  {"id":"sysdash","name":"SysDash","repo":"brionize-nl/sysdash","description":"Systeem monitoring dashboard","system":"Je werkt aan SysDash: Python agents, Supabase, n8n workflows en Discord meldingen. Dit project is onafhankelijk van DELPHI.","files":["docs/BLUEPRINT.md"]}
+]

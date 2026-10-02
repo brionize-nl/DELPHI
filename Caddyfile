@@ -7,6 +7,11 @@ ollama.brionize.nl {
 	}
 	respond @api_no_key "Ongeautoriseerd" 401
 
+	@delphi_storage path /api/history /api/history/* /api/inspections /api/inspections/*
+	handle @delphi_storage {
+		reverse_proxy localhost:3001
+	}
+
 	handle /api/ollama/* {
 		uri strip_prefix /api/ollama
 		reverse_proxy localhost:11434 {
