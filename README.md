@@ -22,7 +22,7 @@ sudo bash setup.sh
 
 `setup.sh` behoudt de bestaande proxy-routes en voegt `/api/history`, `/api/history/*`, `/api/inspections` en `/api/inspections/*` toe. Nieuwe publieke assetdirectories worden leesbaar voor Caddy gemaakt. De JSON-API draait op `127.0.0.1:3001` als gebruiker `delphi` via `delphi-api.service`; de API controleert ook zelf de Caddy-toegangssleutel. Gesprekken staan in `/data/chats/` (maximaal 8 MB per gesprek), rapporten in `/data/watchdog/inspections/`. Incomplete writes worden atomair vervangen.
 
-API/Caddy-sleutel: `/etc/caddy/ollama-api-key`; installatie maakt een root-managed kopie in `/etc/delphi/api-key`. De GitHub-PAT blijft op de VPS. `/etc/delphi/github-key` is uitsluitend voor watchdog Git-auth, nooit onderdeel van een remote-URL, CLI-argument of rapport.
+API/Caddy-sleutel: `/etc/caddy/ollama-api-key`; installatie maakt een root-managed kopie in `/etc/delphi/api-key`. Het GitHub-token (PAT of bestaande GitHub OAuth-aanmelding) blijft op de VPS. `/etc/delphi/github-key` is uitsluitend voor watchdog Git-auth, nooit onderdeel van een remote-URL, CLI-argument of rapport.
 
 Als `/etc/caddy/github-api-key` bestaat, installeert setup de cronjob in `/etc/cron.d/delphi-watchdog`. Iedere vier uur, als `delphi`, worden de vier blueprint-projecten gescand. Git en Node worden zo nodig via de OS-pakketten geïnstalleerd; Node wordt alleen voor `node --check` gebruikt, niet als backend of build tool. Het model wordt uit de reeds geïnstalleerde Ollama-modellen gekozen. Geen automatische modeldownloads.
 
@@ -54,3 +54,7 @@ DELPHI_PLAYWRIGHT=/pad/naar/playwright node tests/browser.cjs
 ```
 
 De browsertest start de echte Python-historyserver, controleert de cockpit op desktop/mobiel en offline-cache, en gebruikt fixtures voor Ollama/GitHub. Notification-dispatch wordt gecontroleerd met een nagebootste toestemming/delivery-API; echte OS-meldingen moeten op het apparaat worden gecontroleerd.
+
+## Productiestatus
+
+Alle zeven blueprint-fasen zijn op 2026-10-02 uitgerold. Live chat, opslag, drie ketenstappen, GitHub reads en inspectierapporten zijn gecontroleerd. De vier repositories zijn bereikbaar. De cronjob is actief en de eerste beperkte scans hebben rapporten geschreven. Zie `PROGRESS.md` voor testomvang, backups en resterende apparaatcontrole van meldingen.
