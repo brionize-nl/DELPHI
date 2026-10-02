@@ -74,3 +74,5 @@ _Nog geen geparkeerde items._
 ## 2026-10-02 — Bewijs vóór automatische watchdog-fixes
 
 **Uitvoering binnen de bugfix-regels:** Een live modeltest verzon een typecontrole bij correct JavaScript. Daarom geldt voor automatische commits een onafhankelijk falende syntaxcontrole vóór de wijziging en een geslaagde controle erna. Logische AI-bevindingen verschijnen als onbewezen voorstellen met bronbewijs en diff en vereisen handmatige beoordeling. Modeltekst alleen geldt nooit als bewijs. Dit beperkt automatische reparaties om de harde regel “geen nieuwe features” te kunnen handhaven.
+
+**Aanvulling modelkeuze na live timingtest:** De 8B-inspectie overschreed de begrensde testscan. De productiecron gebruikt nu het reeds aanwezige `llama3.2:latest`; onafhankelijke bewijs- en syntaxcontroles blijven vereist. Geen extra download.
