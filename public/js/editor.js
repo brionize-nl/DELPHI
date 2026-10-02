@@ -131,8 +131,9 @@ $('#btn-editor-commit').addEventListener('click', () => editorAction(async () =>
 async function compareEditorBranch() {
   const {repo, branch} = editorSelection();
   if (!writableBranch(branch)) throw new Error('Kies een werkbranch');
-  const comparison = await githubRequest('repos/' + repo + '/compare/' + encodeURIComponent(editorDefaultBranch) + '...' + encodeURIComponent(branch));
-  editorComparison = {repo, branch, base: editorDefaultBranch, sha: comparison.head_commit.sha};
+  const head = await githubRequest('repos/' + repo + '/git/ref/heads/' + encodeRepoPath(branch));
+  const comparison = await githubRequest('repos/' + repo + '/compare/' + encodeURIComponent(editorDefaultBranch) + '...' + head.object.sha);
+  editorComparison = {repo, branch, base: editorDefaultBranch, baseSha: comparison.base_commit.sha, sha: head.object.sha};
   $('#editor-diff').textContent = comparison.files.map(f => f.filename + '\n' + (f.patch || '(Geen tekst-diff beschikbaar)')).join('\n\n') || 'Geen verschillen';
   editorStatus('Vergelijking: ' + comparison.status + ' · ' + comparison.files.length + ' bestanden');
 }
@@ -142,6 +143,8 @@ $('#btn-editor-merge').addEventListener('click', () => editorAction(async () => 
   if (!writableBranch(branch) || !editorComparison || editorComparison.repo !== repo || editorComparison.branch !== branch) throw new Error('Bekijk eerst de branch-diff');
   const ref = await githubRequest('repos/' + repo + '/git/ref/heads/' + encodeRepoPath(branch));
   if (ref.object.sha !== editorComparison.sha) { editorComparison = null; throw new Error('Branch gewijzigd; vergelijk opnieuw'); }
+  const base = await githubRequest('repos/' + repo + '/git/ref/heads/' + encodeRepoPath(editorComparison.base));
+  if (base.object.sha !== editorComparison.baseSha) { editorComparison = null; throw new Error('Hoofdbranch gewijzigd; vergelijk opnieuw'); }
   if (!confirm(branch + ' mergen naar ' + editorComparison.base + '?')) return;
   await githubRequest('repos/' + repo + '/merges', 'POST', {base: editorComparison.base, head: editorComparison.sha, commit_message: 'Merge ' + branch + ' via DELPHI'});
   editorComparison = null; editorStatus('Branch gemerged.'); loadWerkplaats();

@@ -70,3 +70,7 @@ _Nog geen geparkeerde items._
 **Uitvoering binnen eigenaarsopdracht:** Alle blueprint-fasen op GitHub gemerged en op de bestaande `n8n-vm` uitgerold. De bestaande GitHub-aanmelding van brionize-nl vervangt op de VPS de repo-beperkte sleutel die `brionize-ai-framework` niet kon bereiken. Sleutels blijven in root-managed keyfiles en zijn niet in de repository opgenomen. De vorige configuratie/sleutel zijn root-only gebackupt.
 **Modelkeuze:** Bestaande Ollama-modellen hergebruiken; `llama3.1:8b` voor de cronjob. Geen extra download of betaalde dienst.
 **Notificaties:** Lokale browser/PWA-meldingen met toestemming na een klik; geen gesloten-app pushdienst. Watchdog-rapporten worden op aanvraag geladen, zonder continue polling.
+
+## 2026-10-02 — Bewijs vóór automatische watchdog-fixes
+
+**Uitvoering binnen de bugfix-regels:** Een live modeltest verzon een typecontrole bij correct JavaScript. Daarom geldt voor automatische commits een onafhankelijk falende syntaxcontrole vóór de wijziging en een geslaagde controle erna. Logische AI-bevindingen verschijnen als onbewezen voorstellen met bronbewijs en diff en vereisen handmatige beoordeling. Modeltekst alleen geldt nooit als bewijs. Dit beperkt automatische reparaties om de harde regel “geen nieuwe features” te kunnen handhaven.

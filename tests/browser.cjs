@@ -41,8 +41,8 @@ const server = http.createServer((req, res) => {
     }
     if (/\/api\/github\/repos\/[^/]+\/[^/]+$/.test(req.url)) return res.end(JSON.stringify({default_branch:'main'}));
     if(req.url.includes('/git/commits/')) return res.end(JSON.stringify({tree:{sha:'base-tree-sha'}}));
-    if (req.url.includes('/git/ref/heads/')) return res.end(JSON.stringify({object:{sha:'head-sha'}}));
-    if (req.url.includes('/compare/')) return res.end(JSON.stringify({head_commit:{sha:'head-sha'},status:'ahead',files:[{filename:'test.js',patch:'+const test = 1;'}]}));
+    if (req.url.includes('/git/ref/heads/')) return res.end(JSON.stringify({object:{sha:req.url.endsWith('/main')?'base-sha':'head-sha'}}));
+    if (req.url.includes('/compare/')) return res.end(JSON.stringify({base_commit:{sha:'base-sha'},commits:[],status:'ahead',files:[{filename:'test.js',patch:'+const test = 1;'}]}));
     if (req.url.includes('/contents/')) return res.end(JSON.stringify({type:'file',sha:'old-file-sha',size:10,content:Buffer.from(req.url.includes('/contents/public/sw.js') ? "const CACHE = 'delphi-pwa-v11';" : 'Repo instructie').toString('base64')}));
     if (req.url.endsWith('/tags')) return res.end(JSON.stringify({models: [{name: 'test:latest'}]}));
     if (req.url.includes('/branches')) return res.end(JSON.stringify(branches));

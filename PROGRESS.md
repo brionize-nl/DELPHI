@@ -37,3 +37,10 @@
 - Werkplaats-schrijf-/merge- en watchdog-fixpaden zijn met gecontroleerde fixtures/lokale Git-repositories getest; de live smoketest heeft geen echte projectcode aangepast.
 - Browsermeldingen zijn gebouwd en dispatch is getest. OS-levering/permission op telefoon vereist de eigen browserinstelling; gesloten-app push valt buiten deze implementatie zonder pushdienst.
 - Rollbackbackup: `/opt/delphi/backups/20261002T162610Z/`. Credentialbackup: `/opt/delphi/backups/credentials-20261002/`.
+
+## Laatste controles — 2026-10-02
+
+🔧 Codex, `codex/delphi-final-checks`: watchdog-bevindingen onderbouwen met bronbewijs, extra uitsluiting van sleutel/config-bestanden, begrensde looptijd en live GitHub-schrijfcontrole.
+
+- Werkplaats schrijven volledig live getest via tijdelijke branches en QA-PR #4: UTF-8 create/update, conflicten, cachebump, echte vergelijking, PR, merge en opruimen; main bleef ongewijzigd.
+- Watchdog model-hallucinatie aangetoond op correct JavaScript; automatische publicatie nu beperkt tot onafhankelijk bewezen syntaxreparaties. Logische AI-voorstellen blijven expliciet onbewezen en handmatig te beoordelen. Geheim/configbestanden uitgesloten, schema-echo en verkeerd bronbewijs afgewezen.
