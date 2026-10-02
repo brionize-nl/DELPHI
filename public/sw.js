@@ -1,5 +1,5 @@
-const CACHE = 'delphi-pwa-v3';
-const STATIC = ['/', '/index.html', '/manifest.json', '/icon-192.svg', '/icon-512.svg'];
+const CACHE = 'delphi-pwa-v4';
+const STATIC = ['/', '/index.html', '/manifest.json', '/icon-192.svg', '/icon-512.svg', '/css/delphi.css', '/js/app.js', '/js/chat.js', '/js/werkplaats.js', '/js/launchpad.js'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC)));
