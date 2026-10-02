@@ -108,5 +108,6 @@ function discussInspection(report) {
   let context = lines.join('\n');
   const limit = 10000;
   if (context.length > limit) context = context.slice(0, limit) + '\n[Rapport ingekort; bekijk het volledige rapport in Inspectie.]';
-  startContextConversation('Watchdog — ' + report.project, context, 'Leg deze bevindingen uit. Welke zijn met het getoonde bronbewijs onderbouwd en hoe zou je ze controleren of oplossen?');
+  const project = typeof projectDefinitions !== 'undefined' ? projectDefinitions.find(p => p.repo === report.repo)?.id || '' : '';
+  startContextConversation('Watchdog — ' + report.project, context, 'Leg deze bevindingen uit. Welke zijn met het getoonde bronbewijs onderbouwd en hoe zou je ze controleren of oplossen?', project);
 }

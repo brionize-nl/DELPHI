@@ -104,16 +104,17 @@ const server=http.createServer(async(req,res)=>{
    await page.fill('#compare-prompt','één fout');await page.click('#btn-compare-run');await page.waitForFunction(()=>!compareController && document.querySelector('#compare-status').textContent.includes('status per model'));
    assert.equal(await page.locator('#compare-status-left').innerText(),'Klaar');assert.notEqual(await page.locator('#compare-status-right').innerText(),'Klaar');assert.match(await page.locator('#compare-output-left').innerText(),/alpha/);
    await page.fill('#compare-prompt','langzaam');await page.click('#btn-compare-run');await page.waitForFunction(()=>document.querySelector('#compare-output-left').textContent.includes('Antwoord') && document.querySelector('#compare-output-right').textContent.includes('Antwoord'));
-   await page.click('#btn-compare-stop');await page.waitForFunction(()=>!compareController);assert.equal(await page.locator('#compare-status').innerText(),'Vergelijking gestopt.');assert.equal(aborted,2);
+   await page.click('#btn-compare-stop');await page.waitForFunction(()=>!compareController);assert.equal(await page.locator('#compare-status').innerText(),'Vergelijking gestopt.');for(let attempt=0;aborted<2 && attempt<100;attempt++)await new Promise(r=>setTimeout(r,20));assert.equal(aborted,2);
    await page.fill('#compare-prompt','langzaam');await page.click('#btn-compare-run');await page.waitForFunction(()=>compareController!==null);await page.keyboard.press('Escape');await page.waitForFunction(()=>!compareController);assert.equal(await page.locator('#compare-modal.open').count(),0);
    await page.setViewportSize({width:375,height:812});await page.click('#btn-compare');await page.waitForFunction(()=>!document.querySelector('#btn-compare-run').disabled);
    const panels=await page.locator('.compare-panel').all();const first=await panels[0].boundingBox(),second=await panels[1].boundingBox();assert.ok(second.y>first.y);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
    await page.click('#btn-compare-close');await page.setViewportSize({width:1280,height:720});tested++;
   }
   if(await page.evaluate(()=>typeof discussInspection==='function')) {
+   await page.selectOption('#project-select','brionicle');
    await page.keyboard.press('Control+5');await page.waitForFunction(()=>inspectionReports.length===1);
    const before=bodies.length;await page.locator('#inspection-projects button').filter({hasText:'Bespreek in chat'}).click();
-   assert.equal(bodies.length,before);assert.equal(await page.locator('#view-chat').isVisible(),true);assert.match(await page.locator('#chat-context').innerText(),/Watchdog/);
+   assert.equal(bodies.length,before);assert.equal(await page.locator('#project-select').inputValue(),'delphi');assert.equal(await page.locator('#view-chat').isVisible(),true);assert.match(await page.locator('#chat-context').innerText(),/Watchdog/);
    assert.equal(await page.locator('#chat .msg').count(),0);assert.match(await page.locator('#prompt').inputValue(),/Leg deze bevindingen/);
    await page.selectOption('#provider-select','ollama');await page.waitForFunction(()=>document.querySelector('#model-select').options.length===2);
    await page.fill('#prompt','Waarom is dit een bug?');await page.keyboard.press('Control+Enter');await page.waitForFunction(()=>!generating && !historyRunning);

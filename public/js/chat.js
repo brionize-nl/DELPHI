@@ -500,10 +500,11 @@ async function send(text) {
   promptEl.focus();
 }
 
-function startContextConversation(title, context, draft = '') {
+function startContextConversation(title, context, draft = '', project = '') {
   newConv();
   const conv = conversations[activeConvId];
   conv.title = String(title).slice(0, 200);
+  conv.project = project;
   conv.messages.push({role: 'system', content: String(context)});
   conv.updated = Date.now();
   saveConversations();
