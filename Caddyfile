@@ -5,72 +5,76 @@ ollama.brionize.nl {
 			header X-API-Key __OLLAMA_API_KEY__
 		}
 	}
-	respond @api_no_key "Ongeautoriseerd" 401
-
 	@delphi_storage path /api/history /api/history/* /api/inspections /api/inspections/*
-	handle @delphi_storage {
-		reverse_proxy localhost:3001
-	}
 
-	handle /api/ollama/* {
-		uri strip_prefix /api/ollama
-		reverse_proxy localhost:11434 {
-			header_up Host localhost:11434
-			header_up Origin http://localhost:11434
-			header_up -X-API-Key
-			flush_interval -1
+	# Preserve auth-before-proxy order; Caddy otherwise sorts handle before respond.
+	route {
+		respond @api_no_key "Ongeautoriseerd" 401
+
+		handle @delphi_storage {
+			reverse_proxy localhost:3001
 		}
-	}
 
-	handle /api/claude/* {
-		uri strip_prefix /api/claude
-		reverse_proxy https://api.anthropic.com {
-			header_up x-api-key __CLAUDE_API_KEY__
-			header_up anthropic-version 2023-06-01
-			header_up Host api.anthropic.com
-			flush_interval -1
+		handle /api/ollama/* {
+			uri strip_prefix /api/ollama
+			reverse_proxy localhost:11434 {
+				header_up Host localhost:11434
+				header_up Origin http://localhost:11434
+				header_up -X-API-Key
+				flush_interval -1
+			}
 		}
-	}
 
-	handle /api/openai/* {
-		uri strip_prefix /api/openai
-		reverse_proxy https://api.openai.com {
-			header_up Authorization "Bearer __OPENAI_API_KEY__"
-			header_up Host api.openai.com
-			header_up -X-API-Key
-			flush_interval -1
+		handle /api/claude/* {
+			uri strip_prefix /api/claude
+			reverse_proxy https://api.anthropic.com {
+				header_up x-api-key __CLAUDE_API_KEY__
+				header_up anthropic-version 2023-06-01
+				header_up Host api.anthropic.com
+				flush_interval -1
+			}
 		}
-	}
 
-	handle /api/mistral/* {
-		uri strip_prefix /api/mistral
-		reverse_proxy https://api.mistral.ai {
-			header_up Authorization "Bearer __MISTRAL_API_KEY__"
-			header_up Host api.mistral.ai
-			header_up -X-API-Key
-			flush_interval -1
+		handle /api/openai/* {
+			uri strip_prefix /api/openai
+			reverse_proxy https://api.openai.com {
+				header_up Authorization "Bearer __OPENAI_API_KEY__"
+				header_up Host api.openai.com
+				header_up -X-API-Key
+				flush_interval -1
+			}
 		}
-	}
 
-	handle /api/github/* {
-		uri strip_prefix /api/github
-		reverse_proxy https://api.github.com {
-			header_up Authorization "Bearer __GITHUB_API_KEY__"
-			header_up Host api.github.com
-			header_up User-Agent DELPHI-PWA
-			header_up -X-API-Key
-			flush_interval -1
+		handle /api/mistral/* {
+			uri strip_prefix /api/mistral
+			reverse_proxy https://api.mistral.ai {
+				header_up Authorization "Bearer __MISTRAL_API_KEY__"
+				header_up Host api.mistral.ai
+				header_up -X-API-Key
+				flush_interval -1
+			}
 		}
-	}
 
-	handle /api/* {
-		respond "Route niet gevonden" 404
-	}
+		handle /api/github/* {
+			uri strip_prefix /api/github
+			reverse_proxy https://api.github.com {
+				header_up Authorization "Bearer __GITHUB_API_KEY__"
+				header_up Host api.github.com
+				header_up User-Agent DELPHI-PWA
+				header_up -X-API-Key
+				flush_interval -1
+			}
+		}
 
-	handle {
-		root * /opt/ollama-pwa/public
-		try_files {path} /index.html
-		file_server
+		handle /api/* {
+			respond "Route niet gevonden" 404
+		}
+
+		handle {
+			root * /opt/ollama-pwa/public
+			try_files {path} /index.html
+			file_server
+		}
 	}
 
 	header {

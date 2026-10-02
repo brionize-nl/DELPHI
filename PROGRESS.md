@@ -61,3 +61,5 @@
 - Claude-securitybranch geïntegreerd: onbekende `/api/*` routes geven 404, bestaande expliciete routes blijven bereikbaar; CSP-header toegevoegd.
 - Setup-diagnose gebruikt de expliciete Ollama-route; cache v14 vernieuwt ook de gecachte paginaheaders.
 - Publicatie via GitHub-PR, daarna VPS-pull; geen wachtwoordpush op de VPS nodig.
+
+- Live negatieve auth-test vond dat Caddy `handle` vóór `respond` sorteert. Alle routering is nu in een expliciete `route` geplaatst: sleutelcontrole vóór iedere proxy/URI-wijziging. Onauthenticated API-routes moeten allemaal 401 teruggeven, cache v15.
