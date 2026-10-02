@@ -46,4 +46,3 @@ $('#btn-lp-add').addEventListener('click', () => {
   $('#lp-add-url').value = '';
   renderCustomLinks();
 });
-

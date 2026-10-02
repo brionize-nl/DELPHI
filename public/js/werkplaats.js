@@ -101,4 +101,3 @@ function timeAgo(ts) {
 
 $('#btn-wp-refresh').addEventListener('click', loadWerkplaats);
 $('#wp-repo-filter').addEventListener('change', loadWerkplaats);
-

@@ -628,4 +628,3 @@ $('#btn-clear-all').addEventListener('click', () => {
 $('#settings-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) $('#settings-modal').classList.remove('open');
 });
-
