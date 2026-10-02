@@ -1175,3 +1175,13 @@ mark { background:var(--accent-dim); color:var(--text); border-radius:2px; }
 #voice-status { display:block; color:var(--text-muted); min-height:1em; }
 
 #voice-status:empty { display:none; }
+
+.dashboard-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.dashboard-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:16px; }
+.dashboard-card { padding:18px; background:var(--bg-input); border:1px solid var(--border); border-radius:12px; min-width:0; overflow-wrap:anywhere; }
+.dashboard-card h3 { margin-bottom:12px; font-size:15px; }
+.dashboard-card ul { padding-left:18px; }
+.dashboard-card li { margin:8px 0; }
+.dashboard-card a { color:var(--accent); }
+.dashboard-count { font-size:36px; font-weight:700; }
+@media (max-width:768px) { .dashboard-grid { grid-template-columns:1fr; } }
