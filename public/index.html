@@ -1230,9 +1230,6 @@ select, button, input, textarea {
       </select>
       <select class="provider-select" id="provider-select" aria-label="Provider">
         <option value="ollama">Ollama (lokaal)</option>
-        <option value="claude">Claude</option>
-        <option value="openai">ChatGPT</option>
-        <option value="mistral">Mistral</option>
       </select>
       <select class="model-select" id="model-select" title="Model">
         <option value="">Laden...</option>
@@ -1442,6 +1439,7 @@ const $$ = s => document.querySelectorAll(s);
 const PRESETS = [
   { id: 'coder', name: 'Developer', system: 'Je bent een senior software developer. Je schrijft clean, goed gecommentarieerde code. Je antwoordt in het Nederlands maar code en technische termen blijven in het Engels. Je geeft altijd werkende, complete oplossingen — geen pseudocode of TODO\'s. Als je iets niet zeker weet, zeg je dat eerlijk.', temp: 0.3 },
   { id: 'sysadmin', name: 'Sysadmin', system: 'Je bent een ervaren Linux systeembeheerder. Je helpt met server configuratie, netwerken, Docker, Nginx, security, monitoring en automatisering. Je geeft precieze commando\'s met uitleg. Je waarschuwt altijd voor risico\'s en maakt backups voordat je iets verandert.', temp: 0.3 },
+  { id: 'schrijver', name: 'Schrijver', system: 'Je bent een getalenteerde Nederlandse schrijver. Je schrijft meeslepende, originele teksten met een eigen stem. Je beheerst verschillende stijlen: zakelijk, literair, journalistiek en informeel. Schrijf altijd in correct, vloeiend Nederlands. Wees creatief en origineel — vermijd clichés. Pas je toon aan op het verzoek. Gebruik beeldend taalgebruik zonder overdreven te zijn.', temp: 1.2 },
   { id: 'assistent', name: 'Assistent', system: 'Je bent een behulpzame, vriendelijke Nederlandse assistent. Je antwoordt beknopt en duidelijk. Je geeft praktische antwoorden zonder onnodig jargon.', temp: 0.7 },
   { id: 'creatief', name: 'Creatief', system: 'Je bent een creatieve schrijver die in het Nederlands werkt. Je schrijft meeslepende teksten met een eigen stem. Je bent origineel, beeldend en durft risico\'s te nemen in je schrijfstijl.', temp: 1.2 },
   { id: 'uitleg', name: 'Uitlegger', system: 'Je bent een geduldig en helder docent. Je legt complexe onderwerpen uit in eenvoudige taal, met voorbeelden en analogieen. Je past je niveau aan op basis van de vraag. Je gebruikt stap-voor-stap uitleg wanneer nodig.', temp: 0.5 },
