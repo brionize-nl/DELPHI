@@ -1175,3 +1175,31 @@ mark { background:var(--accent-dim); color:var(--text); border-radius:2px; }
 #voice-status { display:block; color:var(--text-muted); min-height:1em; }
 
 #voice-status:empty { display:none; }
+
+.dashboard-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.dashboard-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:16px; }
+.dashboard-card { padding:18px; background:var(--bg-input); border:1px solid var(--border); border-radius:12px; min-width:0; overflow-wrap:anywhere; }
+.dashboard-card h3 { margin-bottom:12px; font-size:15px; }
+.dashboard-card ul { padding-left:18px; }
+.dashboard-card li { margin:8px 0; }
+.dashboard-card a { color:var(--accent); }
+.dashboard-count { font-size:36px; font-weight:700; }
+@media (max-width:768px) { .dashboard-grid { grid-template-columns:1fr; } }
+
+.input-area.file-dragging { outline:2px solid var(--accent); outline-offset:-4px; background:var(--accent-dim); }
+
+.compare-button { padding:7px 10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-input); color:var(--text); cursor:pointer; font-size:12px; }
+.modal.compare-modal { width:min(1100px,calc(100vw - 32px)); max-width:1100px; max-height:90vh; overflow:auto; }
+.compare-models,.compare-panels { display:flex; gap:16px; margin:16px 0; }
+.compare-models label { flex:1; min-width:0; }
+.compare-models select { width:100%; margin-top:6px; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-input); color:var(--text); font-family:inherit; }
+#compare-prompt { width:100%; resize:vertical; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-input); color:var(--text); }
+.compare-actions { display:flex; gap:10px; margin-top:12px; }
+.compare-panel { flex:1; min-width:0; border:1px solid var(--border); border-radius:10px; padding:14px; overflow-wrap:anywhere; background:var(--bg-msg-ai); }
+.compare-panel h4 { font-size:14px; }
+.compare-panel [role="status"] { font-size:12px; color:var(--text-muted); margin:8px 0; }
+.comparison-output { width:100%; max-width:100%; margin:0; padding:0; background:none; max-height:40vh; overflow:auto; }
+@media (max-width:768px) { .compare-panels,.compare-models { flex-direction:column; } .modal.compare-modal { padding:16px; } }
+
+#chat-context[hidden] { display: none; }
+#chat-context { margin: 0; color: var(--text-muted); overflow-wrap: anywhere; }

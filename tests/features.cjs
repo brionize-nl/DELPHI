@@ -68,11 +68,69 @@ const server=http.createServer(async(req,res)=>{
   await page.clock.resume();await page.fill('#conv-search','');await page.waitForTimeout(350);
   await page.selectOption('#provider-select','gemini');await page.waitForFunction(()=>modelSelect.value==='gemini-test');assert.equal(await page.evaluate(()=>PROVIDERS.gemini.chatPath),'/api/gemini/v1beta/openai/chat/completions');await page.selectOption('#provider-select','ollama');await page.waitForFunction(()=>modelSelect.value==='alpha');
   await page.evaluate(()=>{saveCustomLinks([{name:'malicious',url:'javascript:alert(1)'},{name:'Mail',url:'mailto:test@example.com'}]);renderCustomLinks();});assert.equal(await page.locator('#lp-custom-grid a').count(),1);
-  // Later feature PRs extend this test on the same branch stack.
+  if(await page.locator('#view-dashboard').count()) {
+   await page.click('[data-tab="dashboard"]');await page.waitForFunction(()=>!dashboardBusy && document.querySelector('#dashboard-status').textContent==='Dashboard bijgewerkt.');
+   assert.equal(await page.locator('#dashboard-commits li').count(),5);assert.equal(await page.locator('#dashboard-models li').count(),2);assert.equal(await page.locator('#dashboard-inspections li').count(),1);
+   assert.equal(await page.locator('#dashboard-commits script').count(),0);assert.ok(Number(await page.locator('#dashboard-count').innerText())>=3);
+   failModels=true;await page.click('#btn-dashboard-refresh');await page.waitForFunction(()=>!dashboardBusy && document.querySelector('#dashboard-status').textContent.includes('niet beschikbaar'));
+   assert.equal(await page.locator('#dashboard-commits li').count(),5);assert.equal(await page.locator('#dashboard-inspections li').count(),1);failModels=false;
+   await page.click('#btn-dashboard-refresh');await page.waitForFunction(()=>!dashboardBusy && document.querySelector('#dashboard-status').textContent==='Dashboard bijgewerkt.');
+   await page.keyboard.press('Control+1');await page.keyboard.press('Control+6');assert.equal(await page.evaluate(()=>activeTab),'dashboard');tested++;
+  }
+  if((await page.locator('#prompt').getAttribute('placeholder')).includes('sleep een tekstbestand')) {
+   await page.keyboard.press('Control+1');await page.fill('#prompt','Bestaand concept');const before=bodies.length;
+   async function drop(name,type,text) {
+    const transfer=await page.evaluateHandle(({name,type,text})=>{const value=new DataTransfer();value.items.add(new File([text],name,{type}));return value;},{name,type,text});
+    await page.dispatchEvent('#view-chat .input-area','dragenter',{dataTransfer:transfer});assert.equal(await page.locator('.input-area.file-dragging').count(),1);
+    await page.dispatchEvent('#view-chat .input-area','drop',{dataTransfer:transfer});await transfer.dispose();
+   }
+   await drop('code.js','text/javascript','const x = "hé <img onerror=x>";');await page.waitForFunction(()=>document.querySelector('#input-hint').textContent.includes('als concept'));
+   assert.equal(await page.inputValue('#prompt'),'Bestaand concept\n\n```js\nconst x = "hé <img onerror=x>";\n```');assert.equal(bodies.length,before);assert.equal(await page.locator('.input-area.file-dragging').count(),0);
+   const draft=await page.inputValue('#prompt');await drop('large.txt','text/plain','x'.repeat(100*1024+1));assert.match(await page.locator('#input-hint').innerText(),/100 KB/);assert.equal(await page.inputValue('#prompt'),draft);
+   await drop('image.png','image/png','image');assert.match(await page.locator('#input-hint').innerText(),/binaire/);assert.equal(await page.inputValue('#prompt'),draft);
+   await drop('nul.js','text/javascript','code\0binary');await page.waitForFunction(()=>document.querySelector('#input-hint').textContent.includes('binaire inhoud'));assert.equal(await page.inputValue('#prompt'),draft);
+   await drop('notes.md','text/markdown','```\nvoorbeeld\n```');await page.waitForFunction(()=>document.querySelector('#prompt').value.includes('````md'));
+   await page.evaluate(()=>{window.originalReader=FileReader;window.FileReader=class {readAsText(){queueMicrotask(()=>this.onerror());}};});
+   await drop('unreadable.txt','text/plain','text');await page.waitForFunction(()=>document.querySelector('#input-hint').textContent.includes('niet worden gelezen'));await page.evaluate(()=>window.FileReader=window.originalReader);
+   tested++;
+  }
+  if(await page.locator('#btn-compare').count()) {
+   await page.click('#btn-compare');await page.waitForFunction(()=>!document.querySelector('#btn-compare-run').disabled);
+   await page.fill('#compare-prompt','Dezelfde vraag');await page.selectOption('#compare-model-right','alpha');const count=bodies.length;
+   await page.click('#btn-compare-run');assert.match(await page.locator('#compare-status').innerText(),/verschillende/);assert.equal(bodies.length,count);await page.selectOption('#compare-model-right','beta');
+   await page.click('#btn-compare-run');await page.waitForFunction(()=>!compareController && document.querySelector('#compare-status').textContent==='Vergelijking voltooid.');
+   assert.ok(maxParallel>=2);assert.deepEqual(bodies.at(-1).messages,bodies.at(-2).messages);assert.equal(bodies.at(-1).messages.at(-1).content,'Dezelfde vraag');
+   assert.match(await page.locator('#compare-output-left').innerText(),/alpha/);assert.match(await page.locator('#compare-output-right').innerText(),/beta/);assert.equal(await page.locator('#compare-modal img').count(),0);
+   await page.fill('#compare-prompt','één fout');await page.click('#btn-compare-run');await page.waitForFunction(()=>!compareController && document.querySelector('#compare-status').textContent.includes('status per model'));
+   assert.equal(await page.locator('#compare-status-left').innerText(),'Klaar');assert.notEqual(await page.locator('#compare-status-right').innerText(),'Klaar');assert.match(await page.locator('#compare-output-left').innerText(),/alpha/);
+   await page.fill('#compare-prompt','langzaam');await page.click('#btn-compare-run');await page.waitForFunction(()=>document.querySelector('#compare-output-left').textContent.includes('Antwoord') && document.querySelector('#compare-output-right').textContent.includes('Antwoord'));
+   await page.click('#btn-compare-stop');await page.waitForFunction(()=>!compareController);assert.equal(await page.locator('#compare-status').innerText(),'Vergelijking gestopt.');for(let attempt=0;aborted<2 && attempt<100;attempt++)await new Promise(r=>setTimeout(r,20));assert.equal(aborted,2);
+   await page.fill('#compare-prompt','langzaam');await page.click('#btn-compare-run');await page.waitForFunction(()=>compareController!==null);await page.keyboard.press('Escape');await page.waitForFunction(()=>!compareController);assert.equal(await page.locator('#compare-modal.open').count(),0);
+   await page.setViewportSize({width:375,height:812});await page.click('#btn-compare');await page.waitForFunction(()=>!document.querySelector('#btn-compare-run').disabled);
+   const panels=await page.locator('.compare-panel').all();const first=await panels[0].boundingBox(),second=await panels[1].boundingBox();assert.ok(second.y>first.y);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+   await page.click('#btn-compare-close');await page.setViewportSize({width:1280,height:720});tested++;
+  }
+  if(await page.evaluate(()=>typeof discussInspection==='function')) {
+   await page.selectOption('#project-select','brionicle');
+   await page.keyboard.press('Control+5');await page.waitForFunction(()=>inspectionReports.length===1);
+   const before=bodies.length;await page.locator('#inspection-projects button').filter({hasText:'Bespreek in chat'}).click();
+   assert.equal(bodies.length,before);assert.equal(await page.locator('#project-select').inputValue(),'delphi');assert.equal(await page.locator('#view-chat').isVisible(),true);assert.match(await page.locator('#chat-context').innerText(),/Watchdog/);
+   assert.equal(await page.locator('#chat .msg').count(),0);assert.match(await page.locator('#prompt').inputValue(),/Leg deze bevindingen/);
+   await page.selectOption('#provider-select','ollama');await page.waitForFunction(()=>document.querySelector('#model-select').options.length===2);
+   await page.fill('#prompt','Waarom is dit een bug?');await page.keyboard.press('Control+Enter');await page.waitForFunction(()=>!generating && !historyRunning);
+   const sent=bodies.at(-1);assert.equal(sent.messages.filter(m=>m.role==='system').length,1);assert.match(sent.messages[0].content,/console.log\(missing\)/);assert.match(sent.messages[0].content,/niet bewezen/);
+   assert.equal(await page.locator('#chat img[src="x"]').count(),0);
+   const id=await page.evaluate(()=>activeConvId);assert.equal(chats.get(id).messages[0].role,'system');
+   await page.reload();await page.waitForFunction(()=>historyReady && !historyRunning);assert.equal(await page.locator('#chat-context').isVisible(),true);assert.equal(await page.locator('#chat .msg').count(),2);
+   await page.evaluate(()=>discussInspection({project:'Lang',repo:'test',status:'findings',findings:[{file:'x',proposal:'x'.repeat(20000)}]}));
+   assert.match(await page.evaluate(()=>conversations[activeConvId].messages[0].content),/Rapport ingekort/);tested++;
+  }
+
+  if(process.env.EXPECT_FEATURES)assert.equal(tested,Number(process.env.EXPECT_FEATURES));
   assert.deepEqual(errors,[]);
   const fallback=await browser.newContext({serviceWorkers:'block'});await fallback.addInitScript(()=>{localStorage.setItem('olla_apikey','test-key');Object.defineProperty(window,'SpeechRecognition',{value:undefined});Object.defineProperty(window,'webkitSpeechRecognition',{value:undefined});});
   const fallbackPage=await fallback.newPage();await fallbackPage.goto(url);assert.equal(await fallbackPage.locator('#btn-voice').isVisible(),false);await fallback.close();
   await page.setViewportSize({width:375,height:812});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-  console.log('PASS: '+tested+' feature groups; speech draft/denial/fallback, shortcuts, full-text debounce/highlight, UTF-8 Markdown download, Gemini paths and URL/XSS safety.');
+  console.log('PASS: '+tested+' feature groups; speech, shortcuts, export, search, dashboard, file drop, model comparison, watchdog context; Gemini paths and URL/XSS safety.');
  } finally {await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;server.close();});
