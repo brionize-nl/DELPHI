@@ -96,9 +96,8 @@ const PROVIDERS = {
     buildBody: (model, messages, temperature) => ({model, messages, stream: true, temperature}), parseStream: 'openai'
   },
   gemini: {
-    name: 'Gemini', chatPath: '/api/gemini/v1beta/chat/completions', modelsPath: '/api/gemini/v1beta/models',
+    name: 'Gemini', chatPath: '/api/gemini/v1beta/openai/chat/completions', modelsPath: '/api/gemini/v1beta/openai/models',
     parseModels: data => (data.data || []).filter(m => m.id.startsWith('gemini-')).map(m => m.id).sort(),
-    defaultModels: ['gemini-2.0-flash', 'gemini-2.5-flash-preview-05-20'],
     buildBody: (model, messages, temperature) => ({model, messages, stream: true, temperature}), parseStream: 'openai'
   },
   mistral: {
@@ -219,51 +218,6 @@ function getActiveTemperature() {
 }
 
 // ── Conversations sidebar ──
-function renderConvList(filter = '') {
-  convList.innerHTML = '';
-  const sorted = Object.values(conversations).sort((a, b) => b.updated - a.updated);
-  const needle = filter.toLowerCase();
-  const filtered = needle ? sorted.filter(c => (c.title + ' ' + c.messages.map(m => m.content).join(' ')).toLowerCase().includes(needle)) : sorted;
-
-  let lastGroup = '';
-  filtered.forEach(conv => {
-    const group = dateGroup(conv.updated);
-    if (group !== lastGroup) {
-      lastGroup = group;
-      const g = document.createElement('div');
-      g.className = 'conv-date';
-      g.textContent = group;
-      convList.appendChild(g);
-    }
-
-    const item = document.createElement('div');
-    item.className = 'conv-item' + (conv.id === activeConvId ? ' active' : '');
-    item.dataset.id = conv.id;
-    item.innerHTML = `
-      <svg class="conv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      <span class="conv-title">${escapeHtml(conv.title)}<small style="display:block;font-size:10px;opacity:0.8">${escapeHtml(PROVIDERS[conv.provider || 'ollama']?.name || 'Ollama')} · ${escapeHtml(conv.model || 'onbekend')}</small></span>
-      <div class="conv-actions">
-        <button class="conv-action ren" title="Hernoemen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></button>
-        <button class="conv-action del" title="Verwijderen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
-      </div>
-    `;
-    item.addEventListener('click', e => {
-      if (e.target.closest('.conv-action')) return;
-      switchConv(conv.id);
-      closeSidebar();
-    });
-    item.querySelector('.ren').addEventListener('click', () => openRename(conv.id));
-    item.querySelector('.del').addEventListener('click', () => deleteConv(conv.id));
-    convList.appendChild(item);
-  });
-
-  if (!filtered.length) {
-    const empty = document.createElement('div');
-    empty.style.cssText = 'padding:20px;text-align:center;color:var(--text-muted);font-size:13px';
-    empty.textContent = needle ? 'Geen resultaten' : 'Nog geen gesprekken';
-    convList.appendChild(empty);
-  }
-}
 
 function dateGroup(ts) {
   const d = new Date(ts);
@@ -277,6 +231,7 @@ function dateGroup(ts) {
 }
 
 function switchConv(id) {
+  if(id!==activeConvId)document.dispatchEvent(new Event('delphi:chat-draft-reset'));
   if (generating && abortCtrl) abortCtrl.abort();
   activeConvId = id;
   setSetting('active', id);
@@ -295,6 +250,7 @@ function switchConv(id) {
 }
 
 function newConv() {
+  document.dispatchEvent(new Event('delphi:chat-draft-reset'));
   if (generating && abortCtrl) abortCtrl.abort();
   const id = genId();
   conversations[id] = {
@@ -365,7 +321,6 @@ function openSidebar() { sidebar.classList.add('open'); }
 function closeSidebar() { sidebar.classList.remove('open'); }
 $('#btn-menu').addEventListener('click', openSidebar);
 $('#sidebar-backdrop').addEventListener('click', closeSidebar);
-$('#conv-search').addEventListener('input', e => renderConvList(e.target.value));
 $('#btn-new-conv').addEventListener('click', newConv);
 
 // ── Markdown ──
@@ -450,6 +405,7 @@ function appendError(text) {
 async function send(text) {
   if (!text.trim() || generating) return;
   if (modelSelect.disabled || !modelSelect.value) { appendError('Kies eerst een beschikbaar model'); return; }
+  document.dispatchEvent(new Event('delphi:chat-draft-reset'));
   const providerId = providerSelect.value;
   const provider = activeProvider();
   const selectedModel = modelSelect.value;
@@ -584,31 +540,6 @@ $$('.welcome-prompt').forEach(btn => {
     promptEl.value = btn.dataset.prompt;
     send(promptEl.value);
   });
-});
-
-// ── Export ──
-$('#btn-export').addEventListener('click', () => {
-  if (!activeConvId || !conversations[activeConvId]) return;
-  const conv = conversations[activeConvId];
-  if (!conv.messages.length) { alert('Geen berichten om te exporteren'); return; }
-
-  let md = `# ${conv.title}\n\nGeexporteerd: ${new Date().toLocaleString('nl-NL')}\nProvider: ${PROVIDERS[conv.provider || 'ollama']?.name || 'Ollama'}\nModel: ${conv.model || 'onbekend'}\n\n---\n\n`;
-  conv.messages.forEach(m => {
-    if (m.role === 'user') {
-      md += `## Gebruiker\n\n${m.content}\n\n`;
-    } else if (m.role === 'assistant') {
-      md += `## Assistent\n\n${m.content}\n\n`;
-    }
-  });
-
-  const blob = new Blob([md], { type: 'text/markdown' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = conv.title.replace(/[^a-zA-Z0-9 -]/g, '').replace(/\s+/g, '-').toLowerCase() + '.md';
-  a.click();
-  URL.revokeObjectURL(url);
-  closeSidebar();
 });
 
 // ── Settings ──

@@ -2,7 +2,8 @@
 function loadCustomLinks() {
   try {
     const raw = localStorage.getItem('delphi_links');
-    return raw ? JSON.parse(raw) : [];
+    const links = raw ? JSON.parse(raw) : [];
+    return Array.isArray(links) ? links.filter(l => l && typeof l.name==='string' && typeof l.url==='string' && safeUrl(l.url)).map(l=>({...l,url:safeUrl(l.url)})) : [];
   } catch { return []; }
 }
 
@@ -38,7 +39,9 @@ $('#btn-lp-add').addEventListener('click', () => {
   const name = $('#lp-add-name').value.trim();
   let url = $('#lp-add-url').value.trim();
   if (!name || !url) return;
-  if (!url.startsWith('http')) url = 'https://' + url;
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(url)) url = 'https://' + url;
+  url = safeUrl(url);
+  if (!url) { alert('Gebruik een http-, https- of mailto-link'); return; }
   const links = loadCustomLinks();
   links.push({ name, url });
   saveCustomLinks(links);

@@ -63,3 +63,7 @@
 - Publicatie via GitHub-PR, daarna VPS-pull; geen wachtwoordpush op de VPS nodig.
 
 - Live negatieve auth-test vond dat Caddy `handle` vóór `respond` sorteert. Alle routering is nu in een expliciete `route` geplaatst: sleutelcontrole vóór iedere proxy/URI-wijziging. Onauthenticated API-routes moeten allemaal 401 teruggeven, cache v15.
+
+## Feature-briefing 2026-10-02
+
+🔧 Codex: acht features; providers gemerged via PR #10. ✅ Chat-tools gebouwd/getest op `codex/chat-tools`: dicteren (mockresultaten/permission/fallback), sneltoetsen, UTF-8 Markdown-downloads per gesprek en full-text zoeken met 300ms debounce en veilige markering. Daarna vier afzonderlijke PR’s. Feature-merges door eigenaar.

@@ -24,7 +24,7 @@
     </button>
   </div>
   <div class="sidebar-search">
-    <input type="text" id="conv-search" placeholder="Zoeken...">
+    <input type="text" id="conv-search" placeholder="Zoek titel of bericht..." aria-label="Zoek in alle gesprekken">
   </div>
   <div class="history-tools"><button id="btn-history-sync" type="button">Ververs geschiedenis</button><small id="history-status" role="status">Lokaal bewaard</small></div>
   <div class="conv-list" id="conv-list"></div>
@@ -168,11 +168,13 @@
       <div class="input-wrap">
         <textarea id="prompt" rows="1" placeholder="Typ een bericht... (Shift+Enter voor nieuwe regel)" autocomplete="off"></textarea>
       </div>
+      <button class="voice-btn" id="btn-voice" type="button" hidden aria-label="Dicteren" aria-pressed="false" title="Dicteren via je browser; audio kan online worden verwerkt">🎙</button>
       <button class="send-btn" id="btn-send" title="Verstuur (Enter)">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
       </button>
     </div>
     <div class="input-hint" id="input-hint"></div>
+    <small id="voice-status" role="status"></small>
   </div>
   </div><!-- /view-chat -->
 
@@ -342,6 +344,7 @@
 <script src="/js/app.js"></script>
 <script src="/js/chat.js"></script>
 <script src="/js/history.js"></script>
+<script src="/js/voice.js"></script>
 <script src="/js/projects.js"></script>
 <script src="/js/werkplaats.js"></script>
 <script src="/js/editor.js"></script>

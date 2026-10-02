@@ -76,3 +76,9 @@ _Nog geen geparkeerde items._
 **Uitvoering binnen de bugfix-regels:** Een live modeltest verzon een typecontrole bij correct JavaScript. Daarom geldt voor automatische commits een onafhankelijk falende syntaxcontrole vóór de wijziging en een geslaagde controle erna. Logische AI-bevindingen verschijnen als onbewezen voorstellen met bronbewijs en diff en vereisen handmatige beoordeling. Modeltekst alleen geldt nooit als bewijs. Dit beperkt automatische reparaties om de harde regel “geen nieuwe features” te kunnen handhaven.
 
 **Aanvulling modelkeuze na live timingtest:** De 8B-inspectie overschreed de begrensde testscan. De productiecron gebruikt nu het reeds aanwezige `llama3.2:latest`; onafhankelijke bewijs- en syntaxcontroles blijven vereist. Geen extra download.
+
+## 2026-10-02 — Acht features volgens eigenaarsbriefing
+
+**Besluit:** Spraak, sneltoetsen, Markdown-export per gesprek, gemarkeerd full-text zoeken; daarna dashboard, tekstbestanden slepen, twee Ollama-modellen vergelijken en watchdog-rapport bespreken. Provider-branch eerst gemerged op expliciet verzoek; nieuwe feature-PR's merged de eigenaar zelf.
+**Aanpak/impact:** Vanilla JS, bestaande JSON-sync, geen dependencies, sleutels of polling. Dashboard als zesde tab; Launchpad behouden. Optionele modules falen afzonderlijk. Spraak start alleen na klik en browsertoestemming en kan door de browser online worden verwerkt. Microfoonbeleid beperkt tot eigen origin. Vergelijking gebruikt bestaande lokale Ollama-modellen.
+**Scope/prioriteit:** Vier kleine features in één PR, overige per feature als opeenvolgende PR's; geen live feature-uitrol vóór eigenaarsmerge. Gratis lokale functies; bestaande externe providers blijven optioneel. Features blijven in DELPHI, afstuderen is een later besluit.

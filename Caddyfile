@@ -48,7 +48,7 @@ ollama.brionize.nl {
 		handle /api/gemini/* {
 			uri strip_prefix /api/gemini
 			reverse_proxy https://generativelanguage.googleapis.com {
-				header_up x-goog-api-key __GEMINI_API_KEY__
+				header_up Authorization "Bearer __GEMINI_API_KEY__"
 				header_up Host generativelanguage.googleapis.com
 				header_up -X-API-Key
 				flush_interval -1
@@ -91,7 +91,7 @@ ollama.brionize.nl {
 		X-Content-Type-Options nosniff
 		X-Frame-Options DENY
 		Referrer-Policy no-referrer
-		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		Permissions-Policy "camera=(), microphone=(self), geolocation=()"
 		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
 	}
 }

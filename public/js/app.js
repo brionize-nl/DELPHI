@@ -23,7 +23,7 @@ async function apiFetch(path, opts = {}) {
   return res;
 }
 function escapeHtml(s) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 async function ghFetch(path) {
@@ -42,10 +42,8 @@ const tabBar = $('#tab-bar');
 const chatControls = $('.header-controls');
 const TABS = ['chat', 'werkplaats', 'launchpad', 'chains', 'inspector'];
 
-tabBar.addEventListener('click', e => {
-  const btn = e.target.closest('.tab-btn');
-  if (!btn) return;
-  const tab = btn.dataset.tab;
+function changeTab(tab) {
+  if (!TABS.includes(tab)) return;
   if (tab === activeTab) return;
   activeTab = tab;
   tabBar.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
@@ -57,18 +55,27 @@ tabBar.addEventListener('click', e => {
   if (tab === 'werkplaats') loadWerkplaats();
   if (tab === 'inspector') refreshInspections();
   if (tab === 'launchpad') renderCustomLinks();
+}
+tabBar.addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (btn) changeTab(btn.dataset.tab);
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
 // ── Keyboard shortcuts ──
 document.addEventListener('keydown', e => {
-  if (e.ctrlKey || e.metaKey) {
-    if (e.key === 'n') { e.preventDefault(); newConv(); }
-  }
+  if (e.isComposing) return;
   if (e.key === 'Escape') {
     $$('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+    document.dispatchEvent(new Event('delphi:close-modals'));
     closeSidebar();
+    return;
   }
+  if (!(e.ctrlKey || e.metaKey) || e.altKey || $('.modal-overlay.open')) return;
+  const key = e.key.toLowerCase();
+  if (key === 'n') { e.preventDefault(); changeTab('chat'); newConv(); }
+  else if (/^[1-9]$/.test(key) && TABS[Number(key)-1]) { e.preventDefault(); changeTab(TABS[Number(key)-1]); }
+  else if (key === 'enter' && activeTab === 'chat') { e.preventDefault(); if (!generating) send(promptEl.value); }
 });
 
 // ── Init ──
@@ -123,4 +130,9 @@ function encodeBase64(content) {
   let binary = '';
   for (const byte of bytes) binary += String.fromCharCode(byte);
   return btoa(binary);
+}
+
+function safeUrl(value) {
+  try { const url = new URL(String(value), location.origin); return ['http:', 'https:', 'mailto:'].includes(url.protocol) ? url.href : ''; }
+  catch { return ''; }
 }

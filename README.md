@@ -64,3 +64,11 @@ De watchdog gebruikt [Ollama structured outputs](https://docs.ollama.com/capabil
 Watchdog-bevindingen zijn AI-voorstellen, geen bewezen fouten. Automatische fixbranches vereisen een reproduceerbare syntaxfout vóór de wijziging en een geslaagde controle erna; overige voorstellen verschijnen met bronbewijs en diff voor handmatige beoordeling in Werkplaats. Hiermee kan een verzonnen typecheck of feature geen automatische commit worden.
 
 Productiecontrole (2 oktober 2026): cache v13, Python-tests lokaal en op Oracle ARM64, browserregressie, echte Ollama-chat en drie ketenstappen. GitHub-schrijven is live getest via tijdelijke branches/QA-PR #4, inclusief UTF-8, conflictbewaking, cachebump, compare, merge en opruimen; main werd door deze QA niet gewijzigd. Alle ingestelde projectcontextbestanden zijn bereikbaar. Vergelijkingen gebruiken de echte branchref en `base_commit` van GitHub; wijzigingen aan hoofd- of doelbranch vereisen opnieuw bekijken.
+
+## Nieuwe chat-tools (PR, eigenaar merged)
+
+Dicteren start via de microfoonknop en vult alleen een concept in; Enter verstuurt. Zonder browserondersteuning blijft de knop verborgen. Browsertoestemming en HTTPS zijn vereist. Audio kan door de browser online worden verwerkt; zie [SpeechRecognition](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition). Headless QA test transcript/permission/fallback met fixtures; echte microfoonherkenning vraagt een geschikte browser en apparaat.
+
+Ctrl/Cmd+Enter verstuurt, Ctrl/Cmd+N opent een gesprek, Ctrl/Cmd+1–5 wisselt tabs en Escape sluit modals. Zoeken doorzoekt titel en berichttekst met 300ms debounce en markeert letterlijke treffers. De downloadknop bij ieder gesprek exporteert UTF-8 Markdown; de bestaande algemene exportknop blijft beschikbaar.
+
+Gemini gebruikt de [officiële OpenAI-compatibiliteitsroute](https://ai.google.dev/gemini-api/docs/openai), met serverauthenticatie. Geen nieuwe sleutels of externe providerverzoeken voor deze features. Browser-QA: `DELPHI_PLAYWRIGHT=/pad/naar/playwright node tests/features.cjs`; bestaande regressie: `node tests/browser.cjs` met dezelfde variabele.
