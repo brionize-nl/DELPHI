@@ -139,6 +139,7 @@
   <!-- Chat view -->
   <div class="view" id="view-chat">
   <div class="project-tools"><select id="project-select" aria-label="Project"><option value="">Geen project</option></select><button id="btn-project-context" type="button">Laad repo-context</button><small id="project-status" role="status"></small></div>
+  <p id="chat-context" class="project-tools" hidden></p>
   <div class="chat" id="chat">
     <div class="welcome" id="welcome">
       <img src="/icon-192.svg" alt="" width="64" height="64" style="opacity:0.8">
@@ -343,11 +344,11 @@
 <!-- Ollama comparison -->
 <div class="modal-overlay" id="compare-modal" role="dialog" aria-modal="true" aria-labelledby="compare-title">
   <div class="modal compare-modal">
-    <div class="dashboard-heading"><h3 id="compare-title">Vergelijk twee Ollama-modellen</h3><button id="btn-compare-close" type="button" aria-label="Sluit vergelijking">Sluiten</button></div>
+    <div class="dashboard-heading"><h3 id="compare-title">Vergelijk twee Ollama-modellen</h3><button class="btn btn-ghost" id="btn-compare-close" type="button" aria-label="Sluit vergelijking">Sluiten</button></div>
     <div class="compare-models"><label>Model links <select id="compare-model-left"></select></label><label>Model rechts <select id="compare-model-right"></select></label></div>
     <label for="compare-prompt">Dezelfde vraag voor beide modellen</label><textarea id="compare-prompt" rows="3" placeholder="Typ je vraag..."></textarea>
     <p id="compare-status" role="status"></p>
-    <div class="compare-actions"><button id="btn-compare-run" type="button" disabled>Vergelijk antwoorden</button><button id="btn-compare-stop" type="button" disabled>Stop beide</button></div>
+    <div class="compare-actions"><button class="btn btn-primary" id="btn-compare-run" type="button" disabled>Vergelijk antwoorden</button><button class="btn btn-ghost" id="btn-compare-stop" type="button" disabled>Stop beide</button></div>
     <div class="compare-panels">
       <section class="compare-panel"><h4 id="compare-title-left">Links</h4><p id="compare-status-left" role="status"></p><div id="compare-output-left" class="msg msg-ai comparison-output"></div></section>
       <section class="compare-panel"><h4 id="compare-title-right">Rechts</h4><p id="compare-status-right" role="status"></p><div id="compare-output-right" class="msg msg-ai comparison-output"></div></section>

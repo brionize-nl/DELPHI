@@ -1192,7 +1192,7 @@ mark { background:var(--accent-dim); color:var(--text); border-radius:2px; }
 .modal.compare-modal { width:min(1100px,calc(100vw - 32px)); max-width:1100px; max-height:90vh; overflow:auto; }
 .compare-models,.compare-panels { display:flex; gap:16px; margin:16px 0; }
 .compare-models label { flex:1; min-width:0; }
-.compare-models select { width:100%; margin-top:6px; }
+.compare-models select { width:100%; margin-top:6px; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-input); color:var(--text); font-family:inherit; }
 #compare-prompt { width:100%; resize:vertical; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-input); color:var(--text); }
 .compare-actions { display:flex; gap:10px; margin-top:12px; }
 .compare-panel { flex:1; min-width:0; border:1px solid var(--border); border-radius:10px; padding:14px; overflow-wrap:anywhere; background:var(--bg-msg-ai); }
@@ -1200,3 +1200,6 @@ mark { background:var(--accent-dim); color:var(--text); border-radius:2px; }
 .compare-panel [role="status"] { font-size:12px; color:var(--text-muted); margin:8px 0; }
 .comparison-output { width:100%; max-width:100%; margin:0; padding:0; background:none; max-height:40vh; overflow:auto; }
 @media (max-width:768px) { .compare-panels,.compare-models { flex-direction:column; } .modal.compare-modal { padding:16px; } }
+
+#chat-context[hidden] { display: none; }
+#chat-context { margin: 0; color: var(--text-muted); overflow-wrap: anywhere; }
