@@ -81,11 +81,12 @@ for PROVIDER in CLAUDE OPENAI MISTRAL GITHUB; do
     else
         # Houd het pad gereserveerd: nooit doorsturen naar de Ollama fallback.
         awk -v provider="${PROVIDER,,}" -v name="$PROVIDER" '
-            $0 == "\thandle /api/" provider "/* {" {
-                print; print "\t\trespond \"" name " is niet ingesteld op de server\" 503"
+            $0 ~ "^[[:space:]]*handle /api/" provider "/\\* \\{$" {
+                indent=$0; sub(/handle.*/, "", indent)
+                print; print indent "\trespond \"" name " is niet ingesteld op de server\" 503"
                 skip=1; next
             }
-            skip && $0 == "\t}" {print; skip=0; next}
+            skip && $0 == indent "}" {print; skip=0; next}
             !skip {print}
         ' "$CADDY_TEMP" > "${CADDY_TEMP}.disabled"
         mv "${CADDY_TEMP}.disabled" "$CADDY_TEMP"
