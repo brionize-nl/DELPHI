@@ -56,10 +56,21 @@
 - Python API uitgebreid met `/api/settings` GET/POST endpoint.
 - Caddyfile: `/api/settings` toegevoegd aan `@delphi_storage` matcher.
 
-### Auto-sync bij terugkeer (feature/auto-sync-cleanup)
+### Auto-sync bij terugkeer (PR #22, gemerged)
 - `visibilitychange` listener: synct geschiedenis en links automatisch bij het openen van het tabblad.
 - Throttle: maximaal eenmaal per 30 seconden.
 - Geen "Ververs geschiedenis" knop meer nodig bij wisselen tussen apparaten.
+
+### Inspector bugfix + docs cleanup (PR #22, gemerged)
+- `inspector.js`: `Array.isArray(report.fixes)` guard voorkomt TypeError bij ontbrekend veld.
+- `DELPHI-BLUEPRINT.md`: herschreven van bouwplan naar referentiedocument (alle 7 fases klaar).
+- `AGENTS.md` + `CLAUDE.md`: bestandsstructuur bijgewerkt (4 ontbrekende JS modules + Python API).
+- Cache v28.
+
+### Caddyfile fix — 2026-10-03
+- `setup.sh` voegde dubbele `import` regel toe → "ambiguous site definition" crash.
+- Import-regel verwijderd, GitHub API token handmatig in Caddyfile gezet.
+- Werkplaats weer verbonden met GitHub.
 
 ## Laatste controles — 2026-10-02
 
