@@ -102,11 +102,15 @@ if ! caddy validate --config "$CADDY_TEMP" --adapter caddyfile >/dev/null 2>&1; 
 fi
 mv "$CADDY_TEMP" /etc/caddy/ollama.caddyfile
 
-if ! grep -q 'import.*ollama.caddyfile' /etc/caddy/Caddyfile 2>/dev/null; then
-    echo 'import /etc/caddy/ollama.caddyfile' >> /etc/caddy/Caddyfile
-    echo "Import regel toegevoegd aan /etc/caddy/Caddyfile"
+MAIN_CADDYFILE="/etc/caddy/Caddyfile"
+if grep -q 'ollama\.brionize\.nl' "$MAIN_CADDYFILE" 2>/dev/null; then
+    echo 'import /etc/caddy/ollama.caddyfile' > "$MAIN_CADDYFILE"
+    echo "Oude site-definitie in Caddyfile vervangen door import"
+elif ! grep -q 'import.*ollama.caddyfile' "$MAIN_CADDYFILE" 2>/dev/null; then
+    echo 'import /etc/caddy/ollama.caddyfile' >> "$MAIN_CADDYFILE"
+    echo "Import regel toegevoegd aan $MAIN_CADDYFILE"
 else
-    echo "Import regel bestaat al in /etc/caddy/Caddyfile"
+    echo "Import regel bestaat al in $MAIN_CADDYFILE"
 fi
 
 # 6. Ollama configureren: alleen localhost + alle origins toestaan (Caddy doet de auth)
