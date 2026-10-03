@@ -38,6 +38,29 @@
 - Browsermeldingen zijn gebouwd en dispatch is getest. OS-levering/permission op telefoon vereist de eigen browserinstelling; gesloten-app push valt buiten deze implementatie zonder pushdienst.
 - Rollbackbackup: `/opt/delphi/backups/20261002T162610Z/`. Credentialbackup: `/opt/delphi/backups/credentials-20261002/`.
 
+## Verbeteringen — 2026-10-03
+
+### PR #18: Vergelijking opslaan
+- Elk modelresultaat uit de vergelijkingsfunctie wordt automatisch als apart gesprek opgeslagen.
+- Titel: `Vergelijking: <model> — <preview>`.
+
+### PR #20: Error logging en Health Agent
+- Gecentraliseerde `logError(source, error)` in app.js (ringbuffer, 50 entries, localStorage).
+- Alle JS-modules (chat, chains, editor, inspector, notify, projects, werkplaats) gebruiken `logError()`.
+- Dashboard: Health Agent checkt Ollama, GitHub API, LocalStorage, Service Worker.
+- Dashboard: Foutlog met laatste 15 fouten, wis-knop.
+
+### PR #21: Welkomtegels en link-sync
+- Welkomtegels vervangen door projectrelevante prompts (Systeemstatus, Changelog, Watchdog, Brionicle).
+- Launchpad-links syncen naar VPS via `/api/settings` (bidirectioneel merge).
+- Python API uitgebreid met `/api/settings` GET/POST endpoint.
+- Caddyfile: `/api/settings` toegevoegd aan `@delphi_storage` matcher.
+
+### Auto-sync bij terugkeer (feature/auto-sync-cleanup)
+- `visibilitychange` listener: synct geschiedenis en links automatisch bij het openen van het tabblad.
+- Throttle: maximaal eenmaal per 30 seconden.
+- Geen "Ververs geschiedenis" knop meer nodig bij wisselen tussen apparaten.
+
 ## Laatste controles — 2026-10-02
 
 ✅ Codex, gemerged via PR #5 en live: watchdog-bevindingen onderbouwen met bronbewijs, extra uitsluiting van sleutel/config-bestanden, begrensde looptijd en live GitHub-schrijfcontrole.
