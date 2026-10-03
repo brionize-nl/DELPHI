@@ -14,7 +14,7 @@ async function refreshInspections() {
       const title=document.createElement('h3');title.textContent=report.project;
       const status=document.createElement('p');
       const labels={pending:'Fixes wachten op review',clean:'Geen nieuwe problemen gevonden',findings:'Bevindingen beschikbaar',error:'Scan mislukt','not-scanned':'Nog niet gescand',merged:'Gemerged',ignored:'Genegeerd','dry-run':'Testscan, geen branch gepubliceerd',scanning:'Scan bezig'};
-      status.textContent=(report.status==='clean' && !report.scanned?'Geen nieuwe geschikte bestanden onderzocht':(labels[report.status] || report.status))+' · '+report.fixes.length+' fixes';
+      status.textContent=(report.status==='clean' && !report.scanned?'Geen nieuwe geschikte bestanden onderzocht':(labels[report.status] || report.status))+' · '+(Array.isArray(report.fixes)?report.fixes.length:0)+' fixes';
       const time=document.createElement('small');
       time.textContent=report.finished?'Laatste scan: '+new Date(report.finished).toLocaleString('nl-NL')+' · volgende cronrun: rond '+new Date(report.next_scan).toLocaleString('nl-NL')+' · '+report.scanned+' bestanden gecontroleerd, '+report.skipped+' overgeslagen'+(report.partial?' · Deelrun: verdere bestanden volgen bij een volgende scan.':''):'';
       const view=document.createElement('button');view.textContent='Bekijk';view.addEventListener('click',()=>viewInspection(report));
@@ -22,7 +22,7 @@ async function refreshInspections() {
       row.append(title,status,time,view,discuss);root.appendChild(row);
       newest=Math.max(newest,report.finished || 0);
     }
-    const signature=inspectionReports.filter(r=>r.status==='pending' && r.fixes.length).map(r=>r.project+':'+r.head).sort().join('|');
+    const signature=inspectionReports.filter(r=>r.status==='pending' && Array.isArray(r.fixes) && r.fixes.length).map(r=>r.project+':'+r.head).sort().join('|');
     if(signature && signature!==getSetting('inspection_notified','')) {
       notifyCompletion('Watchdog fixes klaar','Bekijk de Inspectie-tab voor nieuwe fixes.',0,true);
       setSetting('inspection_notified',signature);
