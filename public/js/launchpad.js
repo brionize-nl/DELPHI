@@ -1,4 +1,4 @@
-// ── Launchpad (eigen links) ──
+// ── Launchpad (eigen links, gesynchroniseerd via VPS) ──
 function loadCustomLinks() {
   try {
     const raw = localStorage.getItem('delphi_links');
@@ -9,6 +9,7 @@ function loadCustomLinks() {
 
 function saveCustomLinks(links) {
   try { localStorage.setItem('delphi_links', JSON.stringify(links)); } catch {}
+  syncLinksToVPS(links);
 }
 
 function renderCustomLinks() {
@@ -49,3 +50,29 @@ $('#btn-lp-add').addEventListener('click', () => {
   $('#lp-add-url').value = '';
   renderCustomLinks();
 });
+
+async function syncLinksToVPS(links) {
+  try {
+    await apiFetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ links }) });
+  } catch (e) { logError('launchpad-sync', e); }
+}
+
+async function syncLinksFromVPS() {
+  try {
+    const settings = await (await apiFetch('/api/settings')).json();
+    if (!Array.isArray(settings.links)) return;
+    const local = loadCustomLinks();
+    const remoteFiltered = settings.links.filter(l => l && typeof l.name === 'string' && typeof l.url === 'string' && safeUrl(l.url));
+    if (JSON.stringify(local) !== JSON.stringify(remoteFiltered)) {
+      const merged = [...local];
+      for (const remote of remoteFiltered) {
+        if (!merged.some(l => l.name === remote.name && l.url === remote.url)) merged.push(remote);
+      }
+      try { localStorage.setItem('delphi_links', JSON.stringify(merged)); } catch {}
+      if (merged.length > local.length) syncLinksToVPS(merged);
+      renderCustomLinks();
+    }
+  } catch (e) { logError('launchpad-sync', e); }
+}
+
+if (apiKey()) syncLinksFromVPS();
