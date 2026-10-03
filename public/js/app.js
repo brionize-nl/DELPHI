@@ -141,6 +141,15 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
 
+let lastAutoSync = 0;
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || !apiKey()) return;
+  if (Date.now() - lastAutoSync < 30000) return;
+  lastAutoSync = Date.now();
+  syncHistory();
+  if (typeof syncLinksFromVPS === 'function') syncLinksFromVPS();
+});
+
 promptEl.focus();
 
 });

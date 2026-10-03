@@ -35,33 +35,41 @@ PWA (ollama.brionize.nl) ←→ Caddy (reverse proxy + API key auth)
 - **Ollama**: lokale LLM server (gratis, onbeperkt)
 - **VPS**: Oracle ARM64, Ubuntu
 
-### Mapstructuur (doelstructuur na fase 1)
+### Mapstructuur
 ```
 DELPHI/
 ├── public/
 │   ├── index.html          ← shell: nav, tabs, layout — GEEN logica
-│   ├── sw.js               ← service worker
+│   ├── sw.js               ← service worker (cache: delphi-pwa-vN)
 │   ├── manifest.json
 │   ├── css/
-│   │   └── delphi.css      ← alle styling
+│   │   └── delphi.css      ← alle styling (dark theme, responsive)
 │   ├── js/
-│   │   ├── app.js          ← init, tabs, gedeelde utilities
-│   │   ├── chat.js         ← chat + Ollama communicatie
+│   │   ├── app.js          ← init, tabs, utilities, auto-sync
+│   │   ├── chat.js         ← chat + Ollama streaming
 │   │   ├── werkplaats.js   ← GitHub API lezen + schrijven
-│   │   ├── launchpad.js    ← links beheer
-│   │   ├── history.js      ← chat-geheugen
+│   │   ├── editor.js       ← code editor voor werkplaats
+│   │   ├── launchpad.js    ← links beheer + VPS sync
+│   │   ├── history.js      ← chat-geheugen (VPS opslag)
 │   │   ├── chains.js       ← ketentaken (prompt-chaining)
-│   │   ├── projects.js     ← project-contexten
+│   │   ├── projects.js     ← project-contexten + systeemprompts
 │   │   ├── inspector.js    ← watchdog resultaten tonen
-│   │   └── notify.js       ← browser notificaties
+│   │   ├── notify.js       ← browser/PWA notificaties
+│   │   ├── voice.js        ← dicteren (SpeechRecognition)
+│   │   ├── dashboard.js    ← systeemstatus, modellen, commits
+│   │   └── compare.js      ← modelvergelijking (2 modellen parallel)
 │   └── data/
 │       └── projects.json   ← project-definities + systeemprompts
 ├── server/
-│   ├── history.sh          ← chat opslaan/laden als JSON
-│   └── watchdog.sh         ← Ollama 24/7 inspectie
+│   ├── api.py              ← Python API (history, settings, inspections)
+│   ├── watchdog.sh         ← Ollama 24/7 inspectie
+│   ├── watchdog.py         ← watchdog Python module
+│   ├── install.sh          ← VPS installatie
+│   ├── delphi-api.service  ← systemd service
+│   └── git-askpass.sh      ← Git authenticatie helper
 ├── Caddyfile               ← template met placeholders
 ├── setup.sh                ← VPS deploy script
-└── DELPHI-BLUEPRINT.md     ← volledig faseplan
+└── DELPHI-BLUEPRINT.md     ← technische blauwdruk
 ```
 
 ## Regels (voor iedereen, niet-onderhandelbaar)
