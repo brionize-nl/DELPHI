@@ -41,9 +41,11 @@ Het besluit wordt vastgelegd in `DECISIONS.md` met datum en reden.
 - Bij twijfel: terug naar Product Owner, niet zelf invullen
 
 ### Stap 5: OPLEVEREN
-- Feature is klaar → Product Owner test en keurt goed
-- Goedgekeurd → merge naar main
+- Feature is klaar → AI maakt een **Pull Request** aan op GitHub
+- De PR verschijnt in de **Werkplaats-tab** van DELPHI met een Merge-knop
+- Product Owner bekijkt de PR daar en klikt op Merge
 - Niet goed → terug naar stap 4 met feedback
+- Na merge: deployen op de VPS met `cd ~/DELPHI && git pull && sudo bash setup.sh`
 - Volwassen en onafhankelijk? → afstuderen naar eigen repo
 
 ---
