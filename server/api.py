@@ -107,6 +107,23 @@ class Handler(BaseHTTPRequestHandler):
                         report['status'] = value['status']
                         atomic_json(file, report)
                         return self.reply(200, report)
+                if route == "/api/settings" and self.command == "GET":
+                    file = self.server.data_dir / "settings.json"
+                    if not file.exists():
+                        return self.reply(200, {})
+                    return self.reply(200, json.loads(file.read_text()))
+                if route == "/api/settings" and self.command == "POST":
+                    length = int(self.headers.get("Content-Length", "0"))
+                    if not 0 < length <= 64 * 1024:
+                        return self.reply(413, {"error": "Instellingen te groot of leeg"})
+                    value = json.loads(self.rfile.read(length))
+                    if not isinstance(value, dict):
+                        return self.reply(400, {"error": "Ongeldige instellingen"})
+                    file = self.server.data_dir / "settings.json"
+                    existing = json.loads(file.read_text()) if file.exists() else {}
+                    existing.update(value)
+                    atomic_json(file, existing)
+                    return self.reply(200, existing)
                 if route == "/api/history/list" and self.command == "GET":
                     values = []
                     for file in chats.glob("*.json"):

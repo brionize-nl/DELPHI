@@ -5,7 +5,7 @@ ollama.brionize.nl {
 			header X-API-Key __OLLAMA_API_KEY__
 		}
 	}
-	@delphi_storage path /api/history /api/history/* /api/inspections /api/inspections/*
+	@delphi_storage path /api/history /api/history/* /api/inspections /api/inspections/* /api/settings
 
 	# Preserve auth-before-proxy order; Caddy otherwise sorts handle before respond.
 	route {
