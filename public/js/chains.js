@@ -23,7 +23,7 @@ async function loadChainModels() {
     (data.models || []).forEach(m => { const o=document.createElement('option');o.value=m.name;o.textContent=m.name;select.appendChild(o); });
     if ([...select.options].some(o=>o.value === previous)) select.value = previous;
     $('#chain-status').textContent = select.options.length ? 'Klaar om te starten.' : 'Geen Ollama-modellen beschikbaar.';
-  } catch (e) { $('#chain-status').textContent = e.message; }
+  } catch (e) { logError('chains', e); $('#chain-status').textContent = e.message; }
 }
 
 function showChainTemplate() {
@@ -72,6 +72,7 @@ $('#btn-chain-run').addEventListener('click', async () => {
     $('#btn-chain-copy').disabled=false;$('#btn-chain-editor').disabled=false;
     if (typeof notifyCompletion === 'function') notifyCompletion('Keten voltooid',chain.name+' is klaar.',Date.now()-start, true);
   } catch(e) {
+    if (e.name !== 'AbortError') logError('chains', e);
     $('#chain-status').textContent=e.name==='AbortError'?'Keten gestopt.':e.message;
     rows.forEach(r=>{if(r.heading.textContent.endsWith('bezig'))r.heading.textContent=r.heading.textContent.replace('bezig',e.name==='AbortError'?'gestopt':'fout');});
   } finally { chainController=null;$('#btn-chain-run').disabled=false;$('#btn-chain-stop').disabled=true; }
