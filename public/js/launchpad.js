@@ -23,18 +23,23 @@ function renderCustomLinks() {
     <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener" class="lp-card">
       <span class="lp-dot" style="background:var(--accent)"></span>
       <div class="lp-card-info"><div class="lp-card-name">${escapeHtml(l.name)}</div><div class="lp-card-desc">${escapeHtml(l.url.replace(/^https?:\/\//, '').split('/')[0])}</div></div>
-      <button onclick="event.preventDefault();event.stopPropagation();removeLink(${i})" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:4px" title="Verwijder">&times;</button>
+      <button class="lp-remove-btn" data-index="${i}" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:4px" title="Verwijder">&times;</button>
     </a>
   `).join('');
 }
 
-window.removeLink = function(i) {
+$('#lp-custom-grid').addEventListener('click', e => {
+  const btn = e.target.closest('.lp-remove-btn');
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const i = Number(btn.dataset.index);
   const links = loadCustomLinks();
   if (!confirm(`"${links[i]?.name}" verwijderen?`)) return;
   links.splice(i, 1);
   saveCustomLinks(links);
   renderCustomLinks();
-};
+});
 
 $('#btn-lp-add').addEventListener('click', () => {
   const name = $('#lp-add-name').value.trim();
