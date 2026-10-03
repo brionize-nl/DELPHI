@@ -60,7 +60,7 @@ async function editorAction(action) {
   const controls=[...$$('#editor-tools button, #editor-tools input, #editor-tools select, #editor-tools textarea')];
   const previous=controls.map(c=>c.disabled);
   controls.forEach(c=>c.disabled=true);
-  try { await action(); } catch (e) { editorStatus(e.message); }
+  try { await action(); } catch (e) { logError('editor', e); editorStatus(e.message); }
   finally { editorBusy = false; controls.forEach((c,i)=>c.disabled=previous[i]); }
 }
 

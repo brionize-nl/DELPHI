@@ -131,7 +131,7 @@ async function loadModels() {
     modelSelect.disabled = false;
     statusDot.classList.add('ok');
     statusDot.title = provider.name + ': modellen geladen';
-  } catch (error) {
+  } catch (error) { logError('models', error);
     if (request !== modelsRequest) return;
     modelSelect.innerHTML = '<option value="">Niet beschikbaar</option>';
     statusDot.title = error.message;
@@ -490,6 +490,7 @@ async function send(text) {
   } catch (e) {
     aiDiv.remove();
     if (e.name !== 'AbortError') {
+      logError('chat', e);
       appendError(e.message);
     }
   }

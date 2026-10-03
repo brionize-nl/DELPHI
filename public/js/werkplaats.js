@@ -113,6 +113,7 @@ async function mergePR(repo, prNumber) {
     btn.classList.add('done');
     setTimeout(loadWerkplaats, 1500);
   } catch (e) {
+    logError('werkplaats', e);
     btn.disabled = false;
     btn.textContent = 'Merge';
     alert('Merge mislukt: ' + (e.message || 'Onbekende fout'));
