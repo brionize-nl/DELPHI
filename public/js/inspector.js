@@ -4,6 +4,7 @@ let inspectionBusy = false;
 
 async function refreshInspections() {
   if (inspectionBusy) return;
+  inspectionBusy = true;
   $('#inspection-status').textContent='Inspecties ophalen…';
   try {
     inspectionReports=await (await apiFetch('/api/inspections')).json();
@@ -30,6 +31,7 @@ async function refreshInspections() {
     inspectionViewed=null;$('#inspection-detail').textContent='Kies een project om de bevindingen te bekijken.';
     $('#inspection-status').textContent=newest?'Inspecties bijgewerkt.':'De watchdog heeft nog geen rapporten geschreven.';
   } catch(e) {logError('inspector', e);$('#inspection-status').textContent=e.message;}
+  finally { inspectionBusy = false; }
 }
 
 function viewInspection(report) {

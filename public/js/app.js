@@ -73,10 +73,10 @@ function changeTab(tab) {
     if (el) el.classList.toggle('hidden', v !== tab);
   });
   chatControls.style.display = tab === 'chat' ? '' : 'none';
-  if (tab === 'werkplaats') loadWerkplaats();
-  if (tab === 'inspector') refreshInspections();
-  if (tab === 'launchpad') renderCustomLinks();
-  if (tab === 'dashboard' && typeof loadDashboard==='function') loadDashboard();
+  if (tab === 'werkplaats' && typeof loadWerkplaats === 'function') loadWerkplaats();
+  if (tab === 'inspector' && typeof refreshInspections === 'function') refreshInspections();
+  if (tab === 'launchpad' && typeof renderCustomLinks === 'function') renderCustomLinks();
+  if (tab === 'dashboard' && typeof loadDashboard === 'function') loadDashboard();
 }
 tabBar.addEventListener('click', e => {
   const btn = e.target.closest('.tab-btn');

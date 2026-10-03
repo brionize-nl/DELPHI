@@ -68,7 +68,7 @@ VPS opslag: /data/chats/, /data/watchdog/inspections/
 DELPHI/
 ├── public/
 │   ├── index.html          ← shell: nav, tabs, layout — GEEN logica
-│   ├── sw.js               ← service worker (cache: delphi-pwa-v27)
+│   ├── sw.js               ← service worker (cache: delphi-pwa-v29)
 │   ├── manifest.json
 │   ├── icon-192.svg
 │   ├── icon-512.svg

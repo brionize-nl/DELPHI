@@ -17,9 +17,10 @@ Meerdere AI's werken aan deze repo. Iedereen volgt dezelfde regels.
 ### Samenwerking
 1. **NOOIT direct op main pushen** — altijd eigen branch, eigenaar merged
 2. **Branch naamgeving**: `{ai}/beschrijving` (bijv. `claude/watchdog`, `codex/modular-split`, `ollama/fixes`)
-3. **Check open branches** voordat je begint — niet aan bestanden werken waar een ander mee bezig is
-4. **Volg het werkproces** — zie `WORKFLOW.md`, geen stap overslaan
-5. **Check besluiten** — zie `DECISIONS.md`, niet opnieuw bespreken wat al besloten is
+3. **Altijd een PR aanmaken** — push naar je branch en maak een Pull Request aan op GitHub. De eigenaar merged via de Werkplaats-tab in DELPHI (daar verschijnt een Merge-knop). Nooit zelf mergen.
+4. **Check open branches** voordat je begint — niet aan bestanden werken waar een ander mee bezig is
+5. **Volg het werkproces** — zie `WORKFLOW.md`, geen stap overslaan
+6. **Check besluiten** — zie `DECISIONS.md`, niet opnieuw bespreken wat al besloten is
 
 ## Architectuur
 

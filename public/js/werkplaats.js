@@ -1,6 +1,6 @@
 // ── Werkplaats (GitHub) ──
-const GH_REPOS = ['brionize-nl/DELPHI', 'brionize-nl/Brionicle'];
-let wpCache = {};
+const GH_REPOS = ['brionize-nl/DELPHI', 'brionize-nl/Brionicle', 'brionize-nl/sysdash', 'brionize-nl/brionize-ai-framework'];
+let wpBusy = false;
 
 // Inject merge-button styles
 (function() {
@@ -10,6 +10,8 @@ let wpCache = {};
 })();
 
 async function loadWerkplaats() {
+  if (wpBusy) return;
+  wpBusy = true;
   const content = $('#wp-content');
   const refreshBtn = $('#btn-wp-refresh');
   const repoFilter = $('#wp-repo-filter').value;
@@ -88,6 +90,7 @@ async function loadWerkplaats() {
 
   content.innerHTML = html;
   refreshBtn.classList.remove('spinning');
+  wpBusy = false;
 
   const filter = $('#wp-repo-filter');
   if (filter.options.length <= 1) {

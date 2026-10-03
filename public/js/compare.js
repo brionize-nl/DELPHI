@@ -64,7 +64,7 @@ async function runComparison() {
     try {
       const response=await apiFetch('/api/ollama/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify(PROVIDERS.ollama.buildBody(models[index],messages,temperature))});
       if(!response.body)throw new Error('Geen antwoordstream ontvangen');
-      await readChatStream(response.body,'ollama',chunk=>{text+=chunk;output.innerHTML=renderMd(text);}); // renderMd escapes source before Markdown rendering.
+      await readChatStream(response.body,'ollama',(chunk)=>{text+=chunk;if(chunk)output.innerHTML=renderMd(text);});
       if(!text)throw new Error('Geen antwoord ontvangen');
       $('#compare-status-'+side).textContent='Klaar';
       return text;

@@ -334,7 +334,7 @@ function renderMd(text) {
   html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
     const escaped = code.trimEnd();
     const langLabel = lang || 'code';
-    return `<pre><div class="code-header"><span class="code-lang">${langLabel}</span><button class="copy-btn" onclick="copyCode(this)">kopieer</button></div><code>${escaped}</code></pre>`;
+    return `<pre><div class="code-header"><span class="code-lang">${langLabel}</span><button class="copy-btn">kopieer</button></div><code>${escaped}</code></pre>`;
   });
 
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -351,9 +351,10 @@ function renderMd(text) {
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
   html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+  html = html.replace(/^\d+\. (.+)$/gm, '<oli>$1</oli>');
+  html = html.replace(/((?:<oli>.*<\/oli>\n?)+)/g, m => '<ol>' + m.replace(/<oli>/g, '<li>').replace(/<\/oli>/g, '</li>') + '</ol>');
   html = html.replace(/^[*-] (.+)$/gm, '<li>$1</li>');
   html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
-  html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
   html = html.replace(/^### (.+)$/gm, '<strong>$1</strong>');
   html = html.replace(/^## (.+)$/gm, '<strong>$1</strong>');
   html = html.replace(/^# (.+)$/gm, '<strong>$1</strong>');
@@ -371,13 +372,15 @@ function renderMd(text) {
   return html;
 }
 
-window.copyCode = function(btn) {
+chat.addEventListener('click', e => {
+  const btn = e.target.closest('.copy-btn');
+  if (!btn) return;
   const code = btn.closest('pre').querySelector('code').textContent;
   navigator.clipboard.writeText(code).then(() => {
     btn.textContent = 'gekopieerd!';
     setTimeout(() => btn.textContent = 'kopieer', 1500);
   });
-};
+});
 
 // ── Messages ──
 function appendMsg(role, content, scroll = true, meta = {}) {
@@ -485,7 +488,7 @@ async function send(text) {
       conv.messages.push({ role: 'assistant', content: fullResponse, provider: providerId, model: selectedModel });
       conv.updated = Date.now();
       saveConversations();
-      notifyCompletion('Antwoord klaar', conv.title, Date.now() - started);
+      if (typeof notifyCompletion === 'function') notifyCompletion('Antwoord klaar', conv.title, Date.now() - started);
     }
   } catch (e) {
     aiDiv.remove();
