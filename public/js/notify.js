@@ -17,6 +17,6 @@ async function notifyCompletion(title, body, duration = 0, always = false) {
     const options={body,icon:'/icon-192.svg',tag:'delphi-'+title,data:{url:'/'}};
     if (registration?.active) await registration.showNotification('DELPHI — '+title,options);
     else new Notification('DELPHI — '+title,options);
-  } catch(e) { $('#notification-status').textContent='Melding niet verstuurd: '+e.message; }
+  } catch(e) { logError('notify', e); $('#notification-status').textContent='Melding niet verstuurd: '+e.message; }
 }
 updateNotificationStatus();

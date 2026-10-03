@@ -15,7 +15,7 @@ async function initProjects() {
       select.appendChild(option);
     });
     select.value = getSetting('project', '');
-  } catch (e) { $('#project-status').textContent = e.message; }
+  } catch (e) { logError('projects', e); $('#project-status').textContent = e.message; }
 }
 
 function selectedProject() { return projectDefinitions.find(p => p.id === $('#project-select').value); }
@@ -52,5 +52,5 @@ $('#btn-project-context').addEventListener('click', async () => {
     if (request !== projectRequest) return;
     projectContext = blocks.join('\n\n'); projectContextId = project.id;
     $('#project-status').textContent = 'Repo-context geladen (' + blocks.length + ' bestanden)';
-  } catch (e) { if (request === projectRequest) $('#project-status').textContent = e.message; }
+  } catch (e) { logError('projects', e); if (request === projectRequest) $('#project-status').textContent = e.message; }
 });

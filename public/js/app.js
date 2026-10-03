@@ -9,6 +9,27 @@ function setSetting(key, val) {
 }
 function apiKey() { return getSetting('apikey', ''); }
 
+const ERROR_LOG_KEY = 'olla_errorlog';
+const ERROR_LOG_MAX = 50;
+function logError(source, error) {
+  const msg = error instanceof Error ? error.message : String(error);
+  try { console.error('[' + source + ']', msg); } catch {}
+  try {
+    const log = JSON.parse(localStorage.getItem(ERROR_LOG_KEY) || '[]');
+    log.push({ t: Date.now(), s: source, m: msg });
+    if (log.length > ERROR_LOG_MAX) log.splice(0, log.length - ERROR_LOG_MAX);
+    localStorage.setItem(ERROR_LOG_KEY, JSON.stringify(log));
+  } catch {}
+}
+function getErrorLog() {
+  try { return JSON.parse(localStorage.getItem(ERROR_LOG_KEY) || '[]'); } catch { return []; }
+}
+function clearErrorLog() {
+  try { localStorage.removeItem(ERROR_LOG_KEY); } catch {}
+}
+window.addEventListener('error', e => logError('window', e.message || 'Onbekende fout'));
+window.addEventListener('unhandledrejection', e => logError('promise', e.reason instanceof Error ? e.reason.message : String(e.reason || 'Onbekende afwijzing')));
+
 async function apiFetch(path, opts = {}) {
   const key = apiKey();
   if (!key) { openSettings(); throw new Error('Geen Caddy toegangssleutel ingesteld'); }
@@ -17,8 +38,8 @@ async function apiFetch(path, opts = {}) {
     let detail = '';
     try { const data = await res.json(); detail = data.error?.message || (typeof data.error === 'string' ? data.error : ''); } catch {}
     if (res.status === 401 && !detail) { openSettings(); throw new Error('Ongeldige Caddy toegangssleutel'); }
-    if (res.status === 503) throw new Error(detail || 'Provider niet ingesteld op de server');
-    throw new Error(detail || `API fout: ${res.status}`);
+    if (res.status === 503) { const err = detail || 'Provider niet ingesteld op de server'; logError('api', err); throw new Error(err); }
+    const err = detail || `API fout: ${res.status}`; logError('api', err); throw new Error(err);
   }
   return res;
 }

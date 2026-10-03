@@ -25,7 +25,7 @@ async function openComparison() {
     for(const side of ['left','right']) {$('#compare-output-'+side).replaceChildren();$('#compare-status-'+side).textContent='';}
     $('#compare-status').textContent=models.length>=2?'Kies twee modellen en stel je vraag.':'Er zijn minstens twee lokale modellen nodig.';
     comparisonInputs(false);$('#compare-prompt').focus();
-  } catch(error) {if(request===compareModelsRequest){comparisonInputs(false);$('#btn-compare-run').disabled=true;$('#compare-status').textContent=error.message;}}
+  } catch(error) {if(request===compareModelsRequest){logError('compare', error);comparisonInputs(false);$('#btn-compare-run').disabled=true;$('#compare-status').textContent=error.message;}}
 }
 function closeComparison() {
   compareModelsRequest++;compareController?.abort();$('#compare-modal')?.classList.remove('open');

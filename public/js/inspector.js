@@ -29,7 +29,7 @@ async function refreshInspections() {
     }
     inspectionViewed=null;$('#inspection-detail').textContent='Kies een project om de bevindingen te bekijken.';
     $('#inspection-status').textContent=newest?'Inspecties bijgewerkt.':'De watchdog heeft nog geen rapporten geschreven.';
-  } catch(e) {$('#inspection-status').textContent=e.message;}
+  } catch(e) {logError('inspector', e);$('#inspection-status').textContent=e.message;}
 }
 
 function viewInspection(report) {
@@ -85,7 +85,7 @@ function viewInspection(report) {
 }
 async function inspectionAction(action) {
   if(inspectionBusy)return;inspectionBusy=true;$('#btn-inspection-refresh').disabled=true;
-  try{await action();}catch(e){$('#inspection-status').textContent=e.message;}
+  try{await action();}catch(e){logError('inspector', e);$('#inspection-status').textContent=e.message;}
   finally{inspectionBusy=false;$('#btn-inspection-refresh').disabled=false;}
 }
 $('#btn-inspection-refresh').addEventListener('click',refreshInspections);
